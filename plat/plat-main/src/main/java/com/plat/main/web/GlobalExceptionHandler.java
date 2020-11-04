@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.plat.common.entity.BaseResponse;
 import com.plat.common.entity.ResponseStatusEnum;
 
-@ControllerAdvice
+//@ControllerAdvice
 public class GlobalExceptionHandler {
 
 	@ResponseBody

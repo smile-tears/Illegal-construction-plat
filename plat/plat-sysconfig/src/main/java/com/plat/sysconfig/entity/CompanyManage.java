@@ -53,6 +53,18 @@ public class CompanyManage implements Serializable {
     */
     @Column(name="grid"  )
     private String grid;
+    
+    /**
+     * 附件名称
+     */
+    @Column(length = 2000  )
+    private String fileName;
+    
+    /**
+     * 附件路径
+     */
+    @Column(length = 2000  )
+    private String filePath;
 
 	/**
 	 * 删除标记

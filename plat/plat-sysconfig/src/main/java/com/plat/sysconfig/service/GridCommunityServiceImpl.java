@@ -117,7 +117,10 @@ public class GridCommunityServiceImpl implements GridCommunityService {
 		result.put("data", list);
 		result.put("pageNo", page.getPageNo());
 		result.put("totalCount", total);
-		result.put("totalPage", total % page.getPageSize() == 0 ? total / page.getPageSize() : total / page.getPageSize() + 1);
+		if (page.getPageNo() != null && page.getPageSize() !=null ) {
+			result.put("totalPage", total % page.getPageSize() == 0 ? total / page.getPageSize() : total / page.getPageSize() + 1);
+		}
+		
 		return new BaseResponse<>(200, "success", result);
 	}
 	@Override

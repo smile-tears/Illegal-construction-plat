@@ -10,17 +10,8 @@ insert into subcompany (id,subcompanyname,supsubcompanyid)
 SELECT replace(uuid(),'-','') as id,'根目录' as subcompanyname,'0' as supsubcompanyid 
 from dual where not EXISTS (select 1 from subcompany where supsubcompanyid='0');
 
-insert into questiontype (id,typename,pid) 
-SELECT replace(uuid(),'-','') as id,'根目录' as typename,'0' as pid 
-from dual where not EXISTS (select 1 from questiontype where pid='0');
 
-insert into gridcommunity (id,gridname,pid) 
-SELECT replace(uuid(),'-','') as id,'根目录' as gridname,'0' as pid 
-from dual where not EXISTS (select 1 from gridcommunity where pid='0');
 
-insert into sample (id,sampleName,supSampleId) 
-SELECT replace(uuid(),'-','') as id,'根目录' as sampleName,'0' as supSampleId 
-from dual where not EXISTS (select 1 from sample where supSampleId='0');
 
 CREATE TABLE if not EXISTS `test_orders` (  
   `id` int(11) NOT NULL AUTO_INCREMENT,  

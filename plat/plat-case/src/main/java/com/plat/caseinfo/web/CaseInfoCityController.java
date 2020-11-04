@@ -64,9 +64,4 @@ public class CaseInfoCityController {
 	public String getType() {
 		return Const.type;
 	}
-	
-	@PostMapping("/caseReportData")
-	public Object getCaseReportData() {
-		return caseInfoCityService.getCaseReportData();
-	}
 }
