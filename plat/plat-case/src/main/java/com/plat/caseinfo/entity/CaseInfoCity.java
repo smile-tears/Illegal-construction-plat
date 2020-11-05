@@ -64,6 +64,11 @@ public class CaseInfoCity implements Serializable {
 	private double limittimes;
 	
 	/**
+	 * 案件结束日期
+	 */
+	private String endDate;
+	
+	/**
 	 * 备注
 	 */
 	@Column(name = "caseDesc")

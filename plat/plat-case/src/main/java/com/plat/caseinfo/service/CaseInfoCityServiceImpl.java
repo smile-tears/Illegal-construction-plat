@@ -1,5 +1,6 @@
 package com.plat.caseinfo.service;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -31,7 +32,9 @@ import com.plat.common.entity.User;
 import com.plat.common.service.UserService;
 import com.plat.common.utils.BeanProcessUtils;
 import com.plat.common.utils.TimeUtil;
-
+import com.plat.sysconfig.dao.SysGlobalConfigRepository;
+import com.plat.sysconfig.entity.SysGlobalConfig;
+import com.plat.sysconfig.util.IntervalTimeUtil;
 import com.plat.caseinfo.entity.CaseInfoCity;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -52,10 +55,29 @@ public class CaseInfoCityServiceImpl implements CaseInfoCityService {
 	//UserRepository userRepository;
 	DepartmentRepository departmentRepository;
 
+	@Autowired
+	SysGlobalConfigRepository sysGlobalConfigRepository;
+	
+	public Integer getCalculateType() {
+		int type = 1;
+		List<SysGlobalConfig> sysGlobalConfigs = sysGlobalConfigRepository.findAll();
+		if (sysGlobalConfigs.size() >0 ) {
+			type = sysGlobalConfigs.get(0).getCalculateTypeOfWorkTime();
+		}
+		return type;
+	}
+	
 	@Override
 	public Object save(CaseInfoCity caseInfoCity) {
 		// TODO Auto-generated method stub
-
+		try {
+			String endDate = IntervalTimeUtil.getEndDate(TimeUtil.getNowTime(),
+					caseInfoCity.getLimittimes() , getCalculateType());
+			caseInfoCity.setEndDate(endDate);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return new BaseResponse<>(200, "success",caseInfoCityRepository.save(caseInfoCity));
 	}
 
@@ -72,6 +94,14 @@ public class CaseInfoCityServiceImpl implements CaseInfoCityService {
 		Optional<CaseInfoCity> source = caseInfoCityRepository.findById(target.getId());
 		if (source.isPresent()) {
 			CaseInfoCity caseInfoCity = (CaseInfoCity) BeanProcessUtils.copy(source.get(), target);
+			try {
+				String endDate = IntervalTimeUtil.getEndDate(TimeUtil.getNowTime(),
+						caseInfoCity.getLimittimes() , getCalculateType());
+				caseInfoCity.setEndDate(endDate);
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			CaseInfoCity result = caseInfoCityRepository.save(caseInfoCity);
 			return new BaseResponse<>(200, "success", result);
 		} else {
@@ -125,7 +155,11 @@ public class CaseInfoCityServiceImpl implements CaseInfoCityService {
 		Integer pageSize = page.getPageSize();
 		// TODO Auto-generated method stub
 		
-		String countSql = " SELECT t1.*,t2.companyName,t3.gridName,t4.name " + 
+		String countSql = " SELECT t1.*,t2.companyName,t3.gridName,t4.name, " + 
+				" case when timestampdiff(SECOND,NOW(),enddate)/timestampdiff(SECOND,reportTime,enddate) >= (1/3) then '0' " + 
+				" when timestampdiff(SECOND,NOW(),enddate)/timestampdiff(SECOND,reportTime,enddate) >= 0 then '1' " + 
+				" when timestampdiff(SECOND,NOW(),enddate)/timestampdiff(SECOND,reportTime,enddate) < 0 then '2' " + 
+				" end as state " +
 				"from caseinfo_city t1 " + 
 				"LEFT JOIN companymanage t2 on t1.companyid=t2.id " + 
 				"LEFT JOIN gridcommunity t3 on t1.gridId=t3.id " + 
