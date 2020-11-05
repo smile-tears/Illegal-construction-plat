@@ -91,6 +91,16 @@ public class CaseInfoCity implements Serializable {
 	private String locationDesc;
 
 	/**
+	 * 纬度
+	 */
+	private String lng;
+	
+	/**
+	 * 经度
+	 */
+	private String lat;
+	
+	/**
      * 附件名称
      */
     @Column(length = 2000  )
