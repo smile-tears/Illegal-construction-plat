@@ -36,6 +36,7 @@ import com.plat.sysconfig.dao.SysGlobalConfigRepository;
 import com.plat.sysconfig.entity.SysGlobalConfig;
 import com.plat.sysconfig.util.IntervalTimeUtil;
 import com.plat.caseinfo.entity.CaseInfoCity;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.plat.caseinfo.dao.CaseInfoCityRepository;
@@ -71,9 +72,14 @@ public class CaseInfoCityServiceImpl implements CaseInfoCityService {
 	public Object save(CaseInfoCity caseInfoCity) {
 		// TODO Auto-generated method stub
 		try {
-			String endDate = IntervalTimeUtil.getEndDate(TimeUtil.getNowTime(),
-					caseInfoCity.getLimittimes() , getCalculateType());
-			caseInfoCity.setEndDate(endDate);
+			if (caseInfoCity.getStatus() == 1) {
+				String currentTime = TimeUtil.getNowTime();
+				caseInfoCity.setReportTime(currentTime);
+				String endDate = IntervalTimeUtil.getEndDate(currentTime,
+						caseInfoCity.getLimittimes() , getCalculateType());
+				caseInfoCity.setEndDate(endDate);
+			}
+			
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -89,15 +95,25 @@ public class CaseInfoCityServiceImpl implements CaseInfoCityService {
 	}
 
 	@Override
-	public Object Update(CaseInfoCity target) {
+	public Object Update(CaseInfoCity target) { // double类型会映射成0.0
 		// TODO Auto-generated method stub
 		Optional<CaseInfoCity> source = caseInfoCityRepository.findById(target.getId());
 		if (source.isPresent()) {
+			//System.out.println("=======source="+JSON.toJSONString(source));
 			CaseInfoCity caseInfoCity = (CaseInfoCity) BeanProcessUtils.copy(source.get(), target);
+			if (target.getLimittimes() == 0) { // double类型会映射成0.0
+				caseInfoCity.setLimittimes(source.get().getLimittimes());
+			}
+			//System.out.println("=======result="+JSON.toJSONString(caseInfoCity));
 			try {
-				String endDate = IntervalTimeUtil.getEndDate(TimeUtil.getNowTime(),
-						caseInfoCity.getLimittimes() , getCalculateType());
-				caseInfoCity.setEndDate(endDate);
+				if (caseInfoCity.getStatus() == 1) {
+					String currentTime = TimeUtil.getNowTime();
+					caseInfoCity.setReportTime(currentTime);
+					String endDate = IntervalTimeUtil.getEndDate(currentTime,
+							caseInfoCity.getLimittimes() , getCalculateType());
+					caseInfoCity.setEndDate(endDate);
+				}
+				
 			} catch (ParseException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -148,9 +164,9 @@ public class CaseInfoCityServiceImpl implements CaseInfoCityService {
 	
 	@Override
 	@Transactional(readOnly = true) // 解决 com.sun.proxy.$Proxy306 cannot be cast to org.hibernate.query.internal.NativeQueryImpl
-	public Object find2(String source,CaseInfoCity caseInfoCity, Page page,HttpServletRequest request ) {
-//		String operator = "";
-//		if (request != null) operator = userService.getUserByToken(request).getId();
+	public Object find2(String pageSource,CaseInfoCity caseInfoCity, Page page,HttpServletRequest request ) {
+		String currentUserId = "";
+		if (request != null) currentUserId = userService.getUserByToken(request).getId();
 		Integer pageNo = page.getPageNo();
 		Integer pageSize = page.getPageSize();
 		// TODO Auto-generated method stub
@@ -163,9 +179,18 @@ public class CaseInfoCityServiceImpl implements CaseInfoCityService {
 				"from caseinfo_city t1 " + 
 				"LEFT JOIN companymanage t2 on t1.companyid=t2.id " + 
 				"LEFT JOIN gridcommunity t3 on t1.gridId=t3.id " + 
-				"LEFT JOIN user t4 on t1.reportor=t4.id ";
-
-		countSql += " ORDER BY t1.operatetime desc ";
+				"LEFT JOIN user t4 on t1.reportor=t4.id where 1=1 ";
+		if (pageSource.equals("0") ) { // 案件待上报
+			countSql += " and t1.status=0 and t1.reportor='"+currentUserId+"'";
+		} else if (pageSource.equals("1")) { // 案件待处置
+			countSql += " and t1.status=1 and t1.reportor='"+currentUserId+"' and (t1.handleState=0 or t1.handleState is null)";
+		} else if (pageSource.equals("2")) { // 综合查询
+			countSql += " and t1.status !=0 ";
+		}
+		if (!StringUtils.isEmpty(caseInfoCity.getTitle())) {
+			countSql += " and t1.title like '%"+caseInfoCity.getTitle()+"%'";
+		}
+		countSql += " ORDER BY t1.reportTime desc ";
 		String dataSql = countSql;
 		if (!StringUtils.isEmpty(pageNo) && !StringUtils.isEmpty(pageSize)) {
 			Integer start = (pageNo - 1 ) * pageSize;

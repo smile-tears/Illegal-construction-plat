@@ -14,7 +14,7 @@ public interface CaseInfoCityRepository extends JpaRepository<CaseInfoCity,Strin
 
 	@Transactional
     @Modifying
-	@Query(value = "update CaseInfo_City set delTag=0 where id in ?1 ",nativeQuery = true )
+	@Query(value = "delete from CaseInfo_City where id in ?1 ",nativeQuery = true )
 	public void deleteByIds(String[] ids);
 
 	@Query(value = "CALL generate_orderNo(?1, ?2, @orderNo); ",nativeQuery = true)

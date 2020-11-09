@@ -39,11 +39,11 @@ public class CaseInfoCity implements Serializable {
 	 */
 	private String title;
 	
-	/**
-	 * 上报日期
-	 */
-	@Column(name = "reportDate")
-	private String reportDate;
+//	/**
+//	 * 上报日期
+//	 */
+//	@Column(name = "reportDate")
+//	private String reportDate;
 	
 	/**
 	 * 上报时间
@@ -106,23 +106,71 @@ public class CaseInfoCity implements Serializable {
 	private String lat;
 	
 	/**
-     * 附件名称
+     * 案件上报附件名称
      */
-    @Column(length = 2000  )
+    @Column(length = 1000  )
     private String fileName;
     
     /**
-     * 附件路径
+     * 案件上报附件路径
      */
-    @Column(length = 2000  )
+    @Column(length = 1000  )
     private String filePath;
+    
+    /**
+     * 案件上报图片名称
+     */
+    @Column(length = 1000  )
+    private String imageName;
+    
+    /**
+     *案件上报图片路径
+     */
+    @Column(length = 1000  )
+    private String imagePath;
 	
+    
 	/**
-	 * 案件当前状态
+	 * 案件当前状态 0暂存，1上报,2处置
 	 */
 	@Column(name = "status")
 	private Integer status;
 
+	/**
+	 * 处置状态 0未处置，1已处置
+	 */
+	@Column(name = "handleState")
+	private Integer handleState;
+	
+	/**
+	 * 处置意见
+	 */
+	@Column(name = "handleIdea")
+	private String handleIdea;
+	
+	/**
+     * 案件处置附件路径
+     */
+    @Column(length = 1000  )
+    private String filePath2;
+    
+    /**
+     * 案件处置附件名称
+     */
+    @Column(length = 1000  )
+    private String fileName2;
+    
+	/**
+     * 案件处置图片名称
+     */
+	@Column(length = 1000  )
+    private String imageName2;
+    
+    /**
+     *案件处置图片路径
+     */
+	@Column(length = 1000  )
+    private String imagePath2;
 
 	/**
 	 * 删除标记
