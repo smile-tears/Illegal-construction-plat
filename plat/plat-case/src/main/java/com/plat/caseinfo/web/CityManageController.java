@@ -21,4 +21,11 @@ public class CityManageController {
         return "index";
     }
 
+    @RequestMapping("/vedio")
+    public String vedio(Model model){
+        System.out.println("vedio=============");
+        model.addAttribute("msg","后台msg");
+        return "vedio";
+    }
+
 }

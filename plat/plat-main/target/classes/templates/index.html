@@ -1,0 +1,103 @@
+<!DOCTYPE html><html lang="zh-cmn-Hans"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="/logo.png"><title>南京市鼓楼区数字化城市管理平台</title><style>#loading-mask {
+      position: fixed;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 100%;
+      background: #fff;
+      user-select: none;
+      z-index: 9999;
+      overflow: hidden
+    }
+
+    .loading-wrapper {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -100%)
+    }
+
+    .loading-dot {
+      animation: antRotate 1.2s infinite linear;
+      transform: rotate(45deg);
+      position: relative;
+      display: inline-block;
+      font-size: 64px;
+      width: 64px;
+      height: 64px;
+      box-sizing: border-box
+    }
+
+    .loading-dot i {
+      width: 22px;
+      height: 22px;
+      position: absolute;
+      display: block;
+      background-color: #1890ff;
+      border-radius: 100%;
+      transform: scale(.75);
+      transform-origin: 50% 50%;
+      opacity: .3;
+      animation: antSpinMove 1s infinite linear alternate
+    }
+
+    .loading-dot i:nth-child(1) {
+      top: 0;
+      left: 0
+    }
+
+    .loading-dot i:nth-child(2) {
+      top: 0;
+      right: 0;
+      -webkit-animation-delay: .4s;
+      animation-delay: .4s
+    }
+
+    .loading-dot i:nth-child(3) {
+      right: 0;
+      bottom: 0;
+      -webkit-animation-delay: .8s;
+      animation-delay: .8s
+    }
+
+    .loading-dot i:nth-child(4) {
+      bottom: 0;
+      left: 0;
+      -webkit-animation-delay: 1.2s;
+      animation-delay: 1.2s
+    }
+
+    @keyframes antRotate {
+      to {
+        -webkit-transform: rotate(405deg);
+        transform: rotate(405deg)
+      }
+    }
+
+    @-webkit-keyframes antRotate {
+      to {
+        -webkit-transform: rotate(405deg);
+        transform: rotate(405deg)
+      }
+    }
+
+    @keyframes antSpinMove {
+      to {
+        opacity: 1
+      }
+    }
+
+    @-webkit-keyframes antSpinMove {
+      to {
+        opacity: 1
+      }
+    }
+
+    .mapModal .ant-modal-body {
+      position: relative !important;
+      padding: 0;
+    }
+    .amap-icon img{
+        width: 25px ;
+        height: 34px ;
+    }</style><link href="/css/chunk-01570116.96742d8e.css" rel="prefetch"><link href="/css/chunk-02fbbfec.1863637c.css" rel="prefetch"><link href="/css/chunk-088b068b.02d39eff.css" rel="prefetch"><link href="/css/chunk-1259da3c.1863637c.css" rel="prefetch"><link href="/css/chunk-19260aa6.19f11d79.css" rel="prefetch"><link href="/css/chunk-1d0692ba.0f9c3b73.css" rel="prefetch"><link href="/css/chunk-499f07de.d398a04d.css" rel="prefetch"><link href="/css/chunk-4c44f636.cc709cb5.css" rel="prefetch"><link href="/css/chunk-5061afa6.f3a9a4be.css" rel="prefetch"><link href="/css/chunk-63a9d4d3.1863637c.css" rel="prefetch"><link href="/css/chunk-68f2ccd8.52356e6c.css" rel="prefetch"><link href="/css/chunk-ae0dab12.f0e737d6.css" rel="prefetch"><link href="/css/chunk-b02584f8.a3b0b4ab.css" rel="prefetch"><link href="/css/chunk-e6e4aa78.451e1f47.css" rel="prefetch"><link href="/css/user.98278369.css" rel="prefetch"><link href="/js/chunk-01570116.33a26ede.js" rel="prefetch"><link href="/js/chunk-02fbbfec.de82c31a.js" rel="prefetch"><link href="/js/chunk-088b068b.e63aeb45.js" rel="prefetch"><link href="/js/chunk-1259da3c.6a334c38.js" rel="prefetch"><link href="/js/chunk-19260aa6.a3ffcf1d.js" rel="prefetch"><link href="/js/chunk-1d0692ba.7d4aadfe.js" rel="prefetch"><link href="/js/chunk-3d3dc912.c1168323.js" rel="prefetch"><link href="/js/chunk-499f07de.1110ea80.js" rel="prefetch"><link href="/js/chunk-4c44f636.825596bc.js" rel="prefetch"><link href="/js/chunk-5061afa6.68842863.js" rel="prefetch"><link href="/js/chunk-63a9d4d3.544f1018.js" rel="prefetch"><link href="/js/chunk-68f2ccd8.b1566e67.js" rel="prefetch"><link href="/js/chunk-69e49a0f.0ce78489.js" rel="prefetch"><link href="/js/chunk-ae0dab12.2db8ce6f.js" rel="prefetch"><link href="/js/chunk-b02584f8.03050558.js" rel="prefetch"><link href="/js/chunk-e6e4aa78.b68a60a2.js" rel="prefetch"><link href="/js/fail.89ada861.js" rel="prefetch"><link href="/js/result.79b3fa6d.js" rel="prefetch"><link href="/js/user.293b55cd.js" rel="prefetch"><link href="/css/app.725c5b44.css" rel="preload" as="style"><link href="/css/chunk-vendors.fcbe8bcb.css" rel="preload" as="style"><link href="/js/app.c845a863.js" rel="preload" as="script"><link href="/js/chunk-vendors.1d40fda0.js" rel="preload" as="script"><link href="/css/chunk-vendors.fcbe8bcb.css" rel="stylesheet"><link href="/css/app.725c5b44.css" rel="stylesheet"></head><body><noscript><strong>We're sorry but vue-antd-pro doesn't work properly without JavaScript enabled. Please enable it to continue.</strong></noscript><div id="app"><div id="loading-mask"><div class="loading-wrapper"><span class="loading-dot loading-dot-spin"><i></i><i></i><i></i><i></i></span></div></div></div><script src="//cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.min.js"></script><script src="//cdn.jsdelivr.net/npm/vue-router@3.1.3/dist/vue-router.min.js"></script><script src="//cdn.jsdelivr.net/npm/vuex@3.1.1/dist/vuex.min.js"></script><script src="//cdn.jsdelivr.net/npm/axios@0.19.0/dist/axios.min.js"></script><script src="https://webapi.amap.com/maps?v=2.0&key=d1024f07886fe1ae0372576596a5f132&plugin=AMap.PolygonEditor"></script><link rel="stylesheet" href="https://a.amap.com/jsapi_demos/static/demo-center/css/demo-center.css"><script src="https://gw.alipayobjects.com/os/antv/pkg/_antv.g2-3.5.1/dist/g2.min.js"></script><script src="https://gw.alipayobjects.com/os/antv/pkg/_antv.data-set-0.10.1/dist/data-set.min.js"></script><script src="/js/chunk-vendors.1d40fda0.js"></script><script src="/js/app.c845a863.js"></script></body></html>
