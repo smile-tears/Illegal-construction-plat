@@ -3,12 +3,19 @@ package com.plat.sysconfig.service;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
 import com.alibaba.fastjson.JSONArray;
 
 import com.alibaba.fastjson.JSONObject;
+
+import org.hibernate.query.internal.NativeQueryImpl;
+import org.hibernate.transform.Transformers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import com.plat.common.entity.BaseResponse;
 import com.plat.common.entity.Page;
@@ -24,6 +31,8 @@ public class GridCommunityServiceImpl implements GridCommunityService {
 	@Autowired
 	GridCommunityRepository gridCommunityRepository;
 
+	@PersistenceContext 
+    EntityManager entityManager;
 
 	@Override
 	public Object save(GridCommunity gridCommunity) {
@@ -62,59 +71,35 @@ public class GridCommunityServiceImpl implements GridCommunityService {
 	public Object find(GridCommunity gridCommunity,Page page) {
 		// TODO Auto-generated method stub
 		// 查询条件设置默认值
-		gridCommunity.setDelTag(1);
-		// 创建匹配器，需要查询条件请修改此处代码
-		ExampleMatcher matcher = ExampleMatcher.matchingAll()
-				.withMatcher("gridName",ExampleMatcher.GenericPropertyMatchers.contains())
-				.withIgnorePaths("manager")
-				.withIgnorePaths("managerDept");
-		// 创建实例
-		//获取部门的ids
-		List<String> ids = new ArrayList<>();
-		if(gridCommunity.getManagerDept()!=null && !"".equals(gridCommunity.getManagerDept()))
-		{
-			ids = gridCommunityRepository.getDepIds(gridCommunity.getManagerDept());
-			if(ids.size()==0)
-			{
-				ids.add("none");
-			}
-		}
-		//获取人员的ids
-		List<String> userIds = new ArrayList<>();
-		if(gridCommunity.getManager()!=null && !"".equals(gridCommunity.getManager()))
-		{
-			userIds = gridCommunityRepository.getUserIds(gridCommunity.getManager());
-			if(userIds.size()==0)
-			{
-				userIds.add("none");
-			}
-		}
+		Integer pageNo = page.getPageNo();
+		Integer pageSize = page.getPageSize();
+		String countSql = " SELECT t1.*,t2.name,t3.departmentname from gridcommunity t1 LEFT JOIN user t2 on t1.manager=t2.id \r\n" + 
+				"LEFT JOIN department t3 on t1.managerDept=t3.id where t1.deltag=1   ";
 
-		final List<String>idsTmp = ids;
-		final List<String>userIdsTmp = userIds;
-
-		Example<GridCommunity> example = Example.of(gridCommunity, matcher);
-		Long total = gridCommunityRepository.count(example);
-		// 分页构造
-		Pageable pageable = null;
-		List<GridCommunity> list = new ArrayList<>();
-		if (page.getPageNo() != null && page.getPageSize() !=null ) {
-			pageable = PageRequest.of(page.getPageNo() - 1, page.getPageSize()); // getPageNo默认从0开始
-			list = gridCommunityRepository.findAll(example, pageable).getContent();
-		} else {
-			list = gridCommunityRepository.findAll(example);
+		if (!StringUtils.isEmpty(gridCommunity.getGridName())) {
+			countSql += " and t1.gridName like '%"+gridCommunity.getGridName()+"%'";
 		}
+		if (!StringUtils.isEmpty(gridCommunity.getManagerDept())) {
+			countSql += " and t3.departmentname like '%"+gridCommunity.getManagerDept()+"%'";
+		}
+		if (!StringUtils.isEmpty(gridCommunity.getManager())) {
+			countSql += " and t2.name like '%"+gridCommunity.getManager()+"%'";
+		}
+		countSql += " ORDER BY t1.showorder ";
+		String dataSql = countSql;
+		if (!StringUtils.isEmpty(pageNo) && !StringUtils.isEmpty(pageSize)) {
+			Integer start = (pageNo - 1 ) * pageSize;
+			Integer offset = pageSize;
+			dataSql += " limit " + start + "," + offset;
+		}
+		// System.out.println("=========="+dataSql);
+		int total = entityManager.createNativeQuery(countSql).getResultList().size();
+		List<Map<String, Object>> resultList = entityManager.createNativeQuery(dataSql)
+				.unwrap(NativeQueryImpl.class).setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP).getResultList();
+		
+
 		Map<String, Object> result = new HashMap<>();
-
-		if(ids.size() >0)
-		{
-			list = (List) list.stream().filter(a->idsTmp.contains(a.getManagerDept())).collect(Collectors.toList());
-		}
-		if(userIds.size()>0)
-		{
-			list = (List) list.stream().filter(a->userIdsTmp.contains(a.getManager())).collect(Collectors.toList());
-		}
-		result.put("data", list);
+		result.put("data", resultList);
 		result.put("pageNo", page.getPageNo());
 		result.put("totalCount", total);
 		if (page.getPageNo() != null && page.getPageSize() !=null ) {

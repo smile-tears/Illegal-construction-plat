@@ -49,6 +49,16 @@ public class CompanyManage implements Serializable {
     private String legalPerson;
 
     /**
+	 * 纬度
+	 */
+	private String lng;
+	
+	/**
+	 * 经度
+	 */
+	private String lat;
+	
+    /**
     * 网格
     */
     @Column(name="grid"  )
