@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Implementation-Title: plat-main
-Implementation-Version: 0.0.1-SNAPSHOT
+Implementation-Version: 0.0.1-wj
 Build-Jdk-Spec: 1.8
 Created-By: Maven Integration for Eclipse
 

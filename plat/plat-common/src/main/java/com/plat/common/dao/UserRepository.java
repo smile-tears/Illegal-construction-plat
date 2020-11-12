@@ -28,5 +28,10 @@ public interface UserRepository extends JpaRepository<User,String> {
 	
 	@Query(value = "select * from user where username=?1",nativeQuery = true)
 	public User getUserByUsername(String username);
+	
+	@Transactional
+    @Modifying
+	@Query(value = "update User set RegistrationID=?1 where id = ?1 ",nativeQuery = true )
+	public Integer updateRegistrationID(String id);
 
 }

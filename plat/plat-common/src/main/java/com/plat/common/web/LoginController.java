@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.fastjson.JSONObject;
+import com.plat.common.dao.UserRepository;
 import com.plat.common.entity.BaseResponse;
 import com.plat.common.entity.Page;
 import com.plat.common.entity.ResponseStatusEnum;
@@ -42,6 +43,9 @@ public class LoginController {
 
 	@Autowired
 	private UserService userService;
+	
+	@Autowired
+	private UserRepository userRepository;
 
 	@PostMapping(value = "/login")
 	public Object userLogin(@RequestBody User user, ServletResponse response) {
@@ -70,8 +74,7 @@ public class LoginController {
 			User user2 = userService.getUserByUsername(username);
 			// 更新注册id registrationID
 			if (!StringUtils.isEmpty(user.getRegistrationID())) {
-				user2.setRegistrationID(user.getRegistrationID());
-				userService.Update(user2);
+				userRepository.updateRegistrationID(user.getRegistrationID());
 			}
 			
 			// 将签发的 JWT token 设置到 HttpServletResponse 的 Header 中

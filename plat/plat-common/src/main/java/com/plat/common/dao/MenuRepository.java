@@ -22,7 +22,15 @@ public interface MenuRepository extends JpaRepository<Menu,String> {
 			"select menuid from user_menu where userId=?1 " + 
 			"union ALL " + 
 			"SELECT menuid from role_menu t1 LEFT JOIN role t2 on t1.roleId=t2.id LEFT JOIN user_role t3 on t3.roleId=t1.roleId " + 
-			"where t3.userId=?1) t1 LEFT JOIN menu t2 on t1.menuid=t2.id " + 
-			"WHERE delTag=1 and visible=0 and t2.supMenuid=?2 ",nativeQuery = true)
+			"where t3.userId=?1 " +
+			"union all "+
+			"select id from menu m where m.supMenuid=?2 and not exists(select 1 from user_menu where menuid=m.id) " +
+			"and not exists(select 1 from role_menu where menuId=m.id)"+
+			") t1 LEFT JOIN menu t2 on t1.menuid=t2.id " + 
+			"WHERE delTag=1 and visible=0 and t2.supMenuid=?2 order by showorder",nativeQuery = true)
 	public List<Menu> getUserMenusBySupMenuId (String userId,String supMenuid);
+	
+	
+	@Query(value = "SELECT * from menu WHERE delTag=1 and visible=0 and supMenuid=?1 order by showorder",nativeQuery = true)
+	public List<Menu> getAdminMenusBySupMenuId (String supMenuid);
 }

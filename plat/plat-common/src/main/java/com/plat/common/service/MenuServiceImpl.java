@@ -13,6 +13,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -21,6 +22,7 @@ import com.plat.common.entity.BaseResponse;
 import com.plat.common.entity.Page;
 import com.plat.common.utils.BeanProcessUtils;
 import com.plat.common.dao.MenuRepository;
+import com.plat.common.dao.UserRepository;
 import com.plat.common.entity.Menu;
 
 @Service
@@ -28,6 +30,9 @@ public class MenuServiceImpl implements MenuService {
 
 	@Autowired
 	MenuRepository menuRepository;
+
+	@Autowired
+	UserRepository userRepository;
 
 	@Override
 	public Object save(Menu menu) {
@@ -119,7 +124,6 @@ public class MenuServiceImpl implements MenuService {
 			jsonObject.put("key", menu.getId());
 			jsonObject.put("title", menu.getMenuName());
 			jsonObject.put("children", recursion(menu.getId(), new JSONArray()));
-			jsonObject.put("icon", menu.getIcon());
 			jsonArray.add(jsonObject);
 		}
 		return jsonArray;
@@ -141,7 +145,8 @@ public class MenuServiceImpl implements MenuService {
 	@Override
 	public Object userTree(String userId, String supMenuid) {
 		// TODO Auto-generated method stub
-		return new BaseResponse<>(200, "success", userTreeRecursion(userId, supMenuid, new JSONArray()));
+		boolean isAdmin =  userRepository.getOne(userId).getUsername().equals("admin");
+		return new BaseResponse<>(200, "success", userTreeRecursion(isAdmin,userId, supMenuid, new JSONArray()));
 	}
 
 //	public JSONArray userTreeRecursion(String userId, String supMenuid, JSONArray jsonArray) {
@@ -157,23 +162,24 @@ public class MenuServiceImpl implements MenuService {
 //		}
 //		return jsonArray;
 //	}
-	public JSONArray userTreeRecursion(String userId, String supMenuid, JSONArray jsonArray) {
+	public JSONArray userTreeRecursion(boolean isAdmin, String userId, String supMenuid, JSONArray jsonArray) {
 		List<Menu> menus = menuRepository.getUserMenusBySupMenuId(userId, supMenuid);
+		if (isAdmin) {
+			menus = menuRepository.getAdminMenusBySupMenuId(supMenuid);
+		} 
 		for (Menu menu : menus) {
 			JSONObject jsonObject = new JSONObject();
 			jsonObject.put("name", menu.getName());
-			jsonObject.put("path", menu.getMenuLink());
-			jsonObject.put("parentId", menu.getSupMenuid());
+			jsonObject.put("path", menu.getPath());
+			jsonObject.put("props", JSONObject.parse(StringUtils.isEmpty(menu.getProps())? "{}" : menu.getProps()));
 			jsonObject.put("id", menu.getId());
-			JSONObject meta = new JSONObject();
-			meta.put("icon", menu.getIcon());
-			meta.put("title", menu.getMenuName());
-			meta.put("show", true);
-			jsonObject.put("meta", meta);
+			jsonObject.put("meta", JSONObject.parse(StringUtils.isEmpty(menu.getMeta())? "{}" : menu.getMeta()));
 			jsonObject.put("component", menu.getComponent());
 			jsonObject.put("redirect", menu.getRedirect());
+			JSONArray resultArray = userTreeRecursion(isAdmin,userId, menu.getId(), new JSONArray());
+			if (resultArray.size() > 0) jsonObject.put("children", resultArray);
 			jsonArray.add(jsonObject);
-			userTreeRecursion(userId, menu.getId(), jsonArray);
+			
 		}
 		return jsonArray;
 	}

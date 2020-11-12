@@ -30,18 +30,35 @@ public class Menu implements Serializable {
 	 */
 	@Column(name = "id", length = 32)
 	private String id;
-
-	/**
-	 * 菜单名称
-	 */
-	@Column(name = "menuName")
+	
 	private String menuName;
+	
+	private String path;
 
 	/**
-	 * 菜单链接
+	 * 菜单标识
 	 */
-	@Column(name = "menuLink")
-	private String menuLink;
+	private String name;
+	
+	/**
+	 * 组件名称
+	 */
+	private String component;
+	
+	private String props;
+	
+	/**
+	 * 重定向
+	 */
+	private String redirect;
+
+	private String meta;
+
+	/**
+	 * 父级id
+	 */
+	@Column(name = "supMenuid")
+	private String supMenuid;
 
 	/**
 	 * 是否显示
@@ -54,44 +71,14 @@ public class Menu implements Serializable {
 	 */
 	@Column(name = "showOrder")
 	private Integer showOrder;
-
-	/**
-	 * 父级id
-	 */
-	@Column(name = "supMenuid")
-	private String supMenuid;
-
-	/**
-	 * 菜单图标
-	 */
-	@Column(name = "icon")
-	private String icon;
-
 	/**
 	 * 删除标记
 	 */
 	@Column(name = "delTag", insertable = false, columnDefinition = "int default 1")
 	private Integer delTag;
 	
-	/**
-	 * 菜单标识
-	 */
-	private String name;
 	
-	/**
-	 * 组件名称
-	 */
-	private String component;
-	
-	/**
-	 * 重定向
-	 */
-	private String redirect;
 
-	/**
-	 * 外部链接
-	 */
-	private String target;
 	
 	public Menu() {
 	}
