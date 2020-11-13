@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.plat.common.dao.UserRepository;
 import com.plat.main.config.JPushConstants;
 import com.plat.main.service.JPushClientService;
 
@@ -17,12 +18,16 @@ public class JPushController {
 	@Autowired
 	JPushClientService jPushClientService;
 	
-	@GetMapping(value = "/jPush/{registrationID}")
-	public Object JPushTest(@PathVariable String registrationID) {
+	@Autowired
+	UserRepository userRepository;
+	
+	@GetMapping(value = "/jPush/{userId}")
+	public Object JPushTest(@PathVariable String userId) {
+		String registrationID = userRepository.getOne(userId).getRegistrationID();
 		List<String> audienceValues = new ArrayList<String>();
 		audienceValues.add(registrationID);
 		int code = jPushClientService.sendPush(JPushConstants.PLATFORM_ANDROID, JPushConstants.AUDIENCE_REGISTRATION_ID, 
-				audienceValues, "测试标题", "测试内容", "测试别名");
+				audienceValues, "指挥中心请求通话", "视频通话", "视频通话");
 		return code;
 	}
 }

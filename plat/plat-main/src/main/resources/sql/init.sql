@@ -7,13 +7,13 @@ SELECT replace(uuid(),'-','') as id,'根目录' as subcompanyname,'0' as supsubc
 from dual where not EXISTS (select 1 from subcompany where supsubcompanyid='0');
 
 insert into menu (id,menuName,path,name,component,redirect,meta,supMenuid,visible,showOrder) 
-SELECT '1' id,'指挥中心' menuName, '/' path , 'index' name, 'BasicLayout' component, '/firstPage' redirect, 
-'{ title: "指挥中心" }' meta, '0' supMenuid,0 visible,1 showOrder
+SELECT '1' id,'首页' menuName, '/' path , 'index' name, 'BasicLayout' component, '/firstPage' redirect, 
+'{ title: "首页" }' meta, '0' supMenuid,0 visible,1 showOrder
 from dual where not EXISTS (select 1 from menu where id='1');
 
 insert into menu (id,menuName,path,name,component,redirect,meta,supMenuid,visible,showOrder) 
-SELECT '2' id,'首页' menuName ,'/firstPage' path , 'FullScreen' name, 'teamWork/FullScreen' component, null redirect, 
-'{ title: "首页", icon: "line-chart", keepAlive: false, permission: [ "dashboard" ] }' meta, '1' supMenuid,0 visible,2 showOrder
+SELECT '2' id,'指挥中心' menuName ,'/firstPage' path , 'FullScreen2' name, 'teamWork/FullScreen2' component, null redirect, 
+'{ title: "指挥中心", icon: "line-chart", keepAlive: false, permission: [ "dashboard" ] }' meta, '1' supMenuid,0 visible,2 showOrder
 from dual where not EXISTS (select 1 from menu where id='2');
 
 insert into menu (id,menuName,path,name,component,redirect,meta,supMenuid,visible,showOrder) 
