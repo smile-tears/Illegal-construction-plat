@@ -31,7 +31,7 @@ public interface UserRepository extends JpaRepository<User,String> {
 	
 	@Transactional
     @Modifying
-	@Query(value = "update User set RegistrationID=?1 where id = ?1 ",nativeQuery = true )
-	public Integer updateRegistrationID(String id);
+	@Query(value = "update User set RegistrationID=?1 where id = ?2 ",nativeQuery = true )
+	public Integer updateRegistrationID(String registrationID, String id);
 
 }

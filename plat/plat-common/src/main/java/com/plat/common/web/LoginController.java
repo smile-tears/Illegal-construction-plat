@@ -74,7 +74,7 @@ public class LoginController {
 			User user2 = userService.getUserByUsername(username);
 			// 更新注册id registrationID
 			if (!StringUtils.isEmpty(user.getRegistrationID())) {
-				userRepository.updateRegistrationID(user.getRegistrationID());
+				userRepository.updateRegistrationID(user.getRegistrationID(),user2.getId());
 			}
 			
 			// 将签发的 JWT token 设置到 HttpServletResponse 的 Header 中
