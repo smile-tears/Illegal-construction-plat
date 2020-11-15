@@ -47,7 +47,31 @@ public class CompanyManage implements Serializable {
     */
     @Column(name="legalPerson"  )
     private String legalPerson;
+    
+    /**
+     * 联系方式
+     */
+    @Column(name="mobile"  )
+    private String mobile;
 
+    /**
+     * 企业规模
+     */
+    @Column(name="qygm"  )
+    private String qygm;
+    
+    /**
+     * 分类分级
+     */
+    @Column(name="level"  )
+    private String level;
+    
+    /**
+     * 备注
+     */
+    @Column(name="remark"  )
+    private String remark;
+    
     /**
 	 * 纬度
 	 */

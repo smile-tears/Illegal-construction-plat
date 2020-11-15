@@ -126,6 +126,12 @@ public class User implements Serializable {
 	 */
 	@Column(name = "post")
 	private String post;
+	
+	/**
+	 * 岗位
+	 */
+	@Column(name = "post2")
+	private String post2;
 
 	/**
 	 * 邮箱
