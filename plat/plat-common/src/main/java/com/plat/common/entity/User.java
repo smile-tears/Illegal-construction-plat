@@ -167,7 +167,7 @@ public class User implements Serializable {
 	 * 职称
 	 */
 	@Column(name = "jobtitle")
-	private Integer jobtitle;
+	private String jobtitle;
 	
 	/**
 	 * 合同开始日期

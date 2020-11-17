@@ -25,7 +25,7 @@ public class CityManageController {
     public String vedio(Model model){
         System.out.println("vedio=============");
         model.addAttribute("msg","后台msg");
-        return "vedio";
+        return "Vedio";
     }
 
 }

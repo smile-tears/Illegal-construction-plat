@@ -49,6 +49,10 @@ public class CompanyManage implements Serializable {
     private String legalPerson;
     
     /**
+     * 安全员
+     */
+    private String safetyOffice;
+    /**
      * 联系方式
      */
     @Column(name="mobile"  )
