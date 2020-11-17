@@ -26,6 +26,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.plat.common.entity.BaseResponse;
 import com.plat.common.entity.Page;
 import com.plat.common.utils.BeanProcessUtils;
+import com.plat.common.utils.TimeUtil;
 import com.plat.caseinfo.dao.UserPositionRepository;
 import com.plat.caseinfo.entity.UserPosition;
 
@@ -41,6 +42,7 @@ public class UserPositionServiceImpl implements UserPositionService {
 	@Override
 	public Object save(UserPosition userPosition) {
 		// TODO Auto-generated method stub
+		userPosition.setUploadTime(TimeUtil.getNowTime());
 		return new BaseResponse<>(200, "success", userPositionRepository.save(userPosition));
 	}
 
@@ -74,10 +76,10 @@ public class UserPositionServiceImpl implements UserPositionService {
 			countSql += " and userid='"+userid+"'";
 		}
 		if (!StringUtils.isEmpty(startTime)) {
-			countSql += " and DATE_FORMAT(uploadTime,'yyyy-MM-dd HH:mm:ss')>='"+startTime+"'";
+			countSql += " and uploadTime>='"+startTime+"'";
 		}
 		if (!StringUtils.isEmpty(endTime)) {
-			countSql += " and DATE_FORMAT(uploadTime,'yyyy-MM-dd HH:mm:ss')<='"+endTime+"'";
+			countSql += " and uploadTime<='"+endTime+"'";
 		} 
 		String dataSql = countSql;
 		if (!StringUtils.isEmpty(pageNo) && !StringUtils.isEmpty(pageSize)) {

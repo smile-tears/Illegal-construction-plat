@@ -9,6 +9,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -59,13 +60,8 @@ public class UserPosition implements Serializable {
 	@Column(name = "lng")
 	private String lng;
 	
-	@Temporal(TemporalType.TIMESTAMP)
-	@UpdateTimestamp
-	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-	//@JsonIgnore // springboot 默认序列化工具是Jackson，如果用到阿里巴巴的序列列化类需要用@JSONField
-	//@JSONField(serialize = false) //JSONField来自com.alibaba.fastjson.annotation包的
-	private Date uploadTime;
+	
+	private String uploadTime;
 
 	public UserPosition() {
 	}
