@@ -39,23 +39,47 @@ public class CaseInfoCity implements Serializable {
 	 */
 	private String title;
 	
-//	/**
-//	 * 上报日期
-//	 */
-//	@Column(name = "reportDate")
-//	private String reportDate;
+	/**
+	 * 被检单位
+	 */
+	@Column(name = "companyId")
+	private String companyId;
 	
 	/**
-	 * 上报时间
+	 * 地址
+	 */
+	private String address;
+	
+	/**
+	 * 负责人
+	 */
+	private String manager;
+	
+	/**
+	 * 负责人联系电话
+	 */
+	private String managerMobile;
+	
+	/**
+     * 	安全员
+     */
+    private String reportor;
+    
+    /**
+     * 	安全员联系电话
+     */
+    private String safetyOfficeMobile;
+	
+	/**
+	 * 检查场所
+	 */
+	private String site;
+	
+	/**
+	 * 检查时间
 	 */
 	@Column(name = "reportTime")
 	private String reportTime;
-	
-	/**
-	 * 上报人
-	 */
-	@Column(name = "reportor")
-	private String reportor;
 	
 	/**
 	 * 处置时限（小时）
@@ -64,7 +88,7 @@ public class CaseInfoCity implements Serializable {
 	private double limittimes;
 	
 	/**
-	 * 案件结束日期
+	 * 案件结束时间
 	 */
 	private String endDate;
 	
@@ -74,36 +98,34 @@ public class CaseInfoCity implements Serializable {
 	@Column(name = "caseDesc")
 	private String caseDesc;
 	
-	/**
-	 * 关联网格
-	 */
-	@Column(name = "gridId")
-	private String gridId;
+	
+	
+//	/**
+//	 * 关联网格
+//	 */
+//	@Column(name = "gridId")
+//	private String gridId;
 //	@OneToOne
 //	@JoinColumn(name = "gridCommunityId", referencedColumnName = "id")
 //	private GridCommunity gridCommunity;
 	
-	/**
-	 * 公司id
-	 */
-	@Column(name = "companyId")
-	private String companyId;
+//	
 	
-	/**
-	 * 位置描述
-	 */
-	@Column(name = "locationDesc")
-	private String locationDesc;
+//	/**
+//	 * 位置描述
+//	 */
+//	@Column(name = "locationDesc")
+//	private String locationDesc;
 
-	/**
-	 * 纬度
-	 */
-	private String lng;
-	
-	/**
-	 * 经度
-	 */
-	private String lat;
+//	/**
+//	 * 纬度
+//	 */
+//	private String lng;
+//	
+//	/**
+//	 * 经度
+//	 */
+//	private String lat;
 	
 	/**
      * 案件上报附件名称

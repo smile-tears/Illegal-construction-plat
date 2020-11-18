@@ -164,9 +164,9 @@ public class CaseInfoCityServiceImpl implements CaseInfoCityService {
 	
 	@Override
 	@Transactional(readOnly = true) // 解决 com.sun.proxy.$Proxy306 cannot be cast to org.hibernate.query.internal.NativeQueryImpl
-	public Object find2(String pageSource,CaseInfoCity caseInfoCity, Page page,HttpServletRequest request ) {
-		String currentUserId = "";
-		if (request != null) currentUserId = userService.getUserByToken(request).getId();
+	public Object find2(CaseInfoCity caseInfoCity, Page page,HttpServletRequest request ) {
+		//String currentUserId = "";
+		//if (request != null) currentUserId = userService.getUserByToken(request).getId();
 		Integer pageNo = page.getPageNo();
 		Integer pageSize = page.getPageSize();
 		// TODO Auto-generated method stub
@@ -180,13 +180,21 @@ public class CaseInfoCityServiceImpl implements CaseInfoCityService {
 				"LEFT JOIN companymanage t2 on t1.companyid=t2.id " + 
 				"LEFT JOIN gridcommunity t3 on t1.gridId=t3.id " + 
 				"LEFT JOIN user t4 on t1.reportor=t4.id where 1=1 ";
-		if (pageSource.equals("0") ) { // 案件待上报
-			countSql += " and t1.status=0 and t1.reportor='"+currentUserId+"'";
-		} else if (pageSource.equals("1")) { // 案件待处置
-			countSql += " and t1.status=1 and t1.reportor='"+currentUserId+"' and (t1.handleState=0 or t1.handleState is null)";
-		} else if (pageSource.equals("2")) { // 综合查询
-			countSql += " and t1.status !=0 ";
+		
+		if (caseInfoCity.getStatus() == 0 ) { // 案件待上报
+			countSql += " and t1.status=0 ";
+			if (!StringUtils.isEmpty(caseInfoCity.getReportor())) {
+				countSql += " and t1.reportor='"+caseInfoCity.getReportor()+"'";
+			}
+		} else if (caseInfoCity.getStatus() == 1) { // 案件待处置
+			countSql += " and t1.status=1 ";
+			if (!StringUtils.isEmpty(caseInfoCity.getReportor())) {
+				countSql += " and t1.reportor='"+caseInfoCity.getReportor()+"'";
+			}
+		} else if (caseInfoCity.getStatus() == 2) { // 综合查询
+			countSql += " and t1.status =2 ";
 		}
+		
 		if (!StringUtils.isEmpty(caseInfoCity.getTitle())) {
 			countSql += " and t1.title like '%"+caseInfoCity.getTitle()+"%'";
 		}
@@ -213,6 +221,12 @@ public class CaseInfoCityServiceImpl implements CaseInfoCityService {
 		}
 		return new BaseResponse<>(200, "success", result);
 		// return null;
+	}
+
+	@Override
+	public Object report() {
+		// TODO Auto-generated method stub
+		return caseInfoCityRepository.report();
 	}
 
 	

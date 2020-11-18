@@ -56,12 +56,12 @@ public class CaseInfoCityController {
 	 * 查询
 	 */
 	@PostMapping("/find2")
-	public Object find(String pageSource, CaseInfoCity caseInfoCity, Page page,HttpServletRequest request) {
-		return caseInfoCityService.find2(pageSource,caseInfoCity, page, request);
+	public Object find( CaseInfoCity caseInfoCity, Page page,HttpServletRequest request) {
+		return caseInfoCityService.find2(caseInfoCity, page, request);
 	}
 	
-	@PostMapping("/type")
-	public String getType() {
-		return Const.type;
+	@PostMapping("/report")
+	public Object getReport() {
+		return caseInfoCityService.report();
 	}
 }

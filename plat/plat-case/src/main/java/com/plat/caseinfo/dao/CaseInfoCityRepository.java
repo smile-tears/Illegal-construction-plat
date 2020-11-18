@@ -17,6 +17,7 @@ public interface CaseInfoCityRepository extends JpaRepository<CaseInfoCity,Strin
 	@Query(value = "delete from CaseInfo_City where id in ?1 ",nativeQuery = true )
 	public void deleteByIds(String[] ids);
 
-	@Query(value = "CALL generate_orderNo(?1, ?2, @orderNo); ",nativeQuery = true)
-	public String getCaseFlowCode(String alpha,int type);
+	@Query(value = "select status,count(1) num from CaseInfo_City "
+			+" where SUBSTR(reportTime,1,10)=DATE_FORMAT(NOW(),'%Y-%m-%d') group by status ",nativeQuery = true)
+	public String report();
 }
