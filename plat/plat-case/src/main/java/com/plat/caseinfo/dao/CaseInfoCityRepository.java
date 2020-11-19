@@ -1,6 +1,9 @@
 package com.plat.caseinfo.dao;
 
 
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -19,5 +22,5 @@ public interface CaseInfoCityRepository extends JpaRepository<CaseInfoCity,Strin
 
 	@Query(value = "select status,count(1) num from CaseInfo_City "
 			+" where SUBSTR(reportTime,1,10)=DATE_FORMAT(NOW(),'%Y-%m-%d') group by status ",nativeQuery = true)
-	public String report();
+	public List<Map<String, Object>> report();
 }

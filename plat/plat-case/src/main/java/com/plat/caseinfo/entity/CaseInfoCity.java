@@ -48,7 +48,8 @@ public class CaseInfoCity implements Serializable {
 	/**
 	 * 地址
 	 */
-	private String address;
+	@Column(name = "locationDesc")
+	private String locationDesc;
 	
 	/**
 	 * 负责人
@@ -68,7 +69,7 @@ public class CaseInfoCity implements Serializable {
     /**
      * 	安全员联系电话
      */
-    private String safetyOfficeMobile;
+    private String reportorMobile;
 	
 	/**
 	 * 检查场所

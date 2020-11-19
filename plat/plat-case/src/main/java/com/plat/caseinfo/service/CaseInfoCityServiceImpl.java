@@ -3,6 +3,7 @@ package com.plat.caseinfo.service;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -171,7 +172,7 @@ public class CaseInfoCityServiceImpl implements CaseInfoCityService {
 		Integer pageSize = page.getPageSize();
 		// TODO Auto-generated method stub
 		
-		String countSql = " SELECT t1.*,t2.companyName,t3.gridName,t4.name, " + 
+		String countSql = " SELECT t1.*,t2.companyName,t3.gridName,t4.name reportorName,t5.name managerName, " + 
 				" case when timestampdiff(SECOND,NOW(),enddate)/timestampdiff(SECOND,reportTime,enddate) >= (1/3) then '0' " + 
 				" when timestampdiff(SECOND,NOW(),enddate)/timestampdiff(SECOND,reportTime,enddate) >= 0 then '1' " + 
 				" when timestampdiff(SECOND,NOW(),enddate)/timestampdiff(SECOND,reportTime,enddate) < 0 then '2' " + 
@@ -179,21 +180,25 @@ public class CaseInfoCityServiceImpl implements CaseInfoCityService {
 				"from caseinfo_city t1 " + 
 				"LEFT JOIN companymanage t2 on t1.companyid=t2.id " + 
 				"LEFT JOIN gridcommunity t3 on t1.gridId=t3.id " + 
-				"LEFT JOIN user t4 on t1.reportor=t4.id where 1=1 ";
-		
-		if (caseInfoCity.getStatus() == 0 ) { // 案件待上报
-			countSql += " and t1.status=0 ";
-			if (!StringUtils.isEmpty(caseInfoCity.getReportor())) {
-				countSql += " and t1.reportor='"+caseInfoCity.getReportor()+"'";
+				"LEFT JOIN user t4 on t1.reportor=t4.id "+
+				"LEFT JOIN user t5 on t1.manager=t5.id "+
+				" where 1=1 ";
+		if (!StringUtils.isEmpty(caseInfoCity.getStatus())) {
+			if (caseInfoCity.getStatus() == 0 ) { // 案件待上报
+				countSql += " and t1.status=0 ";
+				if (!StringUtils.isEmpty(caseInfoCity.getReportor())) {
+					countSql += " and t1.reportor='"+caseInfoCity.getReportor()+"'";
+				}
+			} else if (caseInfoCity.getStatus() == 1) { // 案件待处置
+				countSql += " and t1.status=1 ";
+				if (!StringUtils.isEmpty(caseInfoCity.getReportor())) {
+					countSql += " and t1.reportor='"+caseInfoCity.getReportor()+"'";
+				}
+			} else if (caseInfoCity.getStatus() == 2) { // 综合查询
+				countSql += " and t1.status =2 ";
 			}
-		} else if (caseInfoCity.getStatus() == 1) { // 案件待处置
-			countSql += " and t1.status=1 ";
-			if (!StringUtils.isEmpty(caseInfoCity.getReportor())) {
-				countSql += " and t1.reportor='"+caseInfoCity.getReportor()+"'";
-			}
-		} else if (caseInfoCity.getStatus() == 2) { // 综合查询
-			countSql += " and t1.status =2 ";
 		}
+		
 		
 		if (!StringUtils.isEmpty(caseInfoCity.getTitle())) {
 			countSql += " and t1.title like '%"+caseInfoCity.getTitle()+"%'";
@@ -226,7 +231,27 @@ public class CaseInfoCityServiceImpl implements CaseInfoCityService {
 	@Override
 	public Object report() {
 		// TODO Auto-generated method stub
-		return caseInfoCityRepository.report();
+		Map<String, Integer> result = new HashMap<>();
+		Integer jrsbs = 0;
+		Integer jrczs = 0;
+		Integer jrdcz = 0;
+		List<Map<String, Object>> list = caseInfoCityRepository.report();
+		for (Iterator<Map<String, Object>> iterator = list.iterator(); iterator.hasNext();) {
+			Map<String, Object> map = (Map<String, Object>) iterator.next();
+			System.out.println("======"+JSONObject.toJSONString(map));
+			Integer status = (Integer)map.get("status");
+			if (status == 2) {
+				jrczs = Integer.parseInt(String.valueOf(map.get("num")));
+			} else if(status == 1) {
+				jrsbs = Integer.parseInt(String.valueOf(map.get("num")));
+				jrdcz = jrsbs;
+			}
+		}
+		jrsbs = jrsbs + jrczs;
+		result.put("今日处置数", jrczs);
+		result.put("今日上报数", jrsbs);
+		result.put("今日待处置数", jrdcz);
+		return result;
 	}
 
 	

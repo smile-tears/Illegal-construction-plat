@@ -47,4 +47,12 @@ public class UserPositionController {
 	public Object find(String userid,String startTime,String endTime, Page page) {
 		return userPositionService.find(userid,startTime,endTime,page);
 	}
+	
+	 /**
+	 * 人员最近位置
+	 */
+	@PostMapping("/recent")
+	public Object getRecentPosition() {
+		return userPositionService.getRecentPosition();
+	}
 }

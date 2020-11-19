@@ -103,5 +103,11 @@ public class UserPositionServiceImpl implements UserPositionService {
 		return new BaseResponse<>(200, "success", result);
 	}
 
+	@Override
+	public List<Map<String, String>> getRecentPosition() {
+		// TODO Auto-generated method stub
+		return userPositionRepository.getRecentPosition();
+	}
+
 
 }
