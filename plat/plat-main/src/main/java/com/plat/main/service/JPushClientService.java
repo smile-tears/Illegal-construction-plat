@@ -55,7 +55,7 @@ public class JPushClientService {
      * @param extras         扩展字段
      * @return int
      */
-    public int sendPush(String platform, String audience, List<String> audienceValues, String title, String message, String extras) {
+    public Object sendPush(String platform, String audience, List<String> audienceValues, String title, String message, String extras) {
         // 构建推送对象
         PushPayload payload = buildPushPayload(platform, audience, audienceValues, title, message, extras);
         // 推送push消息
@@ -68,7 +68,7 @@ public class JPushClientService {
      * @param payload 推送对象
      * @return int
      */
-    public int sendPush(PushPayload payload) {
+    public Object sendPush(PushPayload payload) {
         log.info("开始推送push消息");
         ClientConfig clientConfig = ClientConfig.getInstance();
         ClientConfig.getInstance().setPushHostName("https://bjapi.push.jiguang.cn");
@@ -83,23 +83,19 @@ public class JPushClientService {
             PushResult res = jpushClient.sendPush(payload);
             if (res.isResultOK()) {
                 log.info("推送成功，PushResult：{}", res);
-                return 2;
+                return 0;
             } else {
                 log.info("推送失败，PushResult：{}", res);
-                return 3;
+                return JSONObject.toJSONString(res);
             }
         } catch (APIConnectionException e) {
             log.error("Connection error. Should retry later. ", e);
             log.error("Sendno: " + payload.getSendno());
-            return 3;
+            return e.getMessage();
         } catch (APIRequestException e) {
-            log.error("Error response from JPush server. Should review and fix it. ", e);
-            log.info("HTTP Status: " + e.getStatus());
-            log.info("Error Code: " + e.getErrorCode());
-            log.info("Error Message: " + e.getErrorMessage());
-            log.info("Msg ID: " + e.getMsgId());
-            log.error("Sendno: " + payload.getSendno());
-            return 3;
+            log.error("========"+JSONObject.toJSONString(e));
+ 
+            return e.getErrorMessage();
         }
     }
 
