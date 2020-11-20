@@ -6,9 +6,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.shiro.crypto.hash.SimpleHash;
+import org.hibernate.query.internal.NativeQueryImpl;
+import org.hibernate.transform.Transformers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
@@ -16,6 +20,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import com.plat.common.entity.BaseResponse;
 import com.plat.common.entity.Page;
@@ -33,17 +38,21 @@ public class UserServiceImpl implements UserService {
 	UserRepository userRepository;
 	@Autowired
 	DepartmentRepository departmentRepository;
+
+	@PersistenceContext
+	EntityManager entityManager;
+
 	@Override
 	public Object save(User user) {
 		// TODO Auto-generated method stub
-		SimpleHash sh = new SimpleHash(EncryptionUtils.algorithmName, user.getPassword(), 
-				EncryptionUtils.salt, EncryptionUtils.hashIterations);
+		SimpleHash sh = new SimpleHash(EncryptionUtils.algorithmName, user.getPassword(), EncryptionUtils.salt,
+				EncryptionUtils.hashIterations);
 		user.setPassword(sh.toHex());
 		if (user.getSubCompanyId() == null) {
 			String subCompanyId = departmentRepository.getOne(user.getDepartmentId()).getSubCompanyId();
 			user.setSubCompanyId(subCompanyId);
 		}
-		
+
 		return new BaseResponse<>(200, "success", userRepository.save(user));
 	}
 
@@ -60,8 +69,8 @@ public class UserServiceImpl implements UserService {
 		Optional<User> source = userRepository.findById(target.getId());
 		if (source.isPresent()) {
 			User user = (User) BeanProcessUtils.copy(source.get(), target);
-			SimpleHash sh = new SimpleHash(EncryptionUtils.algorithmName, user.getPassword(), 
-					EncryptionUtils.salt, EncryptionUtils.hashIterations);
+			SimpleHash sh = new SimpleHash(EncryptionUtils.algorithmName, user.getPassword(), EncryptionUtils.salt,
+					EncryptionUtils.hashIterations);
 			user.setPassword(sh.toHex());
 			if (user.getSubCompanyId() == null) {
 				String subCompanyId = departmentRepository.getOne(user.getDepartmentId()).getSubCompanyId();
@@ -75,7 +84,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public Object find(User user,Page page) {
+	public Object find(User user, Page page) {
 		// TODO Auto-generated method stub
 		// 查询条件设置默认值
 		user.setDelTag(1);
@@ -87,24 +96,25 @@ public class UserServiceImpl implements UserService {
 		// 分页构造
 		Pageable pageable = null;
 		Object list = new ArrayList<>();
-		if (page.getPageNo() != null && page.getPageSize() !=null ) {
+		if (page.getPageNo() != null && page.getPageSize() != null) {
 			List<Sort.Order> orders = new ArrayList<>();
-			orders.add(new Sort.Order(Sort.Direction.ASC,"showOrder"));
+			orders.add(new Sort.Order(Sort.Direction.ASC, "showOrder"));
 			Sort sort = Sort.by(orders);
-			pageable=PageRequest.of(page.getPageNo() - 1, page.getPageSize(), sort);
+			pageable = PageRequest.of(page.getPageNo() - 1, page.getPageSize(), sort);
 			list = userRepository.findAll(example, pageable).getContent();
 		} else {
 			list = userRepository.findAll(example);
 		}
 		Map<String, Object> result = new HashMap<>();
 		result.put("data", list);
-		result.put("pageNo", page.getPageNo()); 
+		result.put("pageNo", page.getPageNo());
 		result.put("pageSize", page.getPageSize());
 		result.put("totalCount", total);
-		if (page.getPageNo() == null || page.getPageSize() ==null) {
-			result.put("totalPage",1);
+		if (page.getPageNo() == null || page.getPageSize() == null) {
+			result.put("totalPage", 1);
 		} else {
-			result.put("totalPage", total % page.getPageSize() == 0 ? total / page.getPageSize() : total / page.getPageSize() + 1);
+			result.put("totalPage",
+					total % page.getPageSize() == 0 ? total / page.getPageSize() : total / page.getPageSize() + 1);
 		}
 		return new BaseResponse<>(200, "success", result);
 	}
@@ -121,7 +131,7 @@ public class UserServiceImpl implements UserService {
 		} else {
 			return null;
 		}
-		
+
 	}
 
 	@Override
@@ -131,6 +141,39 @@ public class UserServiceImpl implements UserService {
 		String username = JwtUtils.getClaimFiled(token, "username");
 		User user = userRepository.getUserByUsername(username);
 		return user;
+	}
+
+	@Override
+	public Object getUserGridList(Page page) {
+		Integer pageNo = page.getPageNo();
+		Integer pageSize = page.getPageSize();
+		// TODO Auto-generated method stub
+
+		String countSql = " select t1.*,t2.id as grid,t2.gridName from user t1  " + 
+				" LEFT JOIN gridcommunity t2 on instr(t2.patrolManager,t1.id)  " + 
+				" where t1.delTag=1 ";
+
+		String dataSql = countSql;
+		if (!StringUtils.isEmpty(pageNo) && !StringUtils.isEmpty(pageSize)) {
+			Integer start = (pageNo - 1) * pageSize;
+			Integer offset = pageSize;
+			dataSql += " limit " + start + "," + offset;
+		}
+		// System.out.println("=========="+dataSql);
+		int total = entityManager.createNativeQuery(countSql).getResultList().size();
+		List<Map<String, Object>> resultList = entityManager.createNativeQuery(dataSql).unwrap(NativeQueryImpl.class)
+				.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP).getResultList();
+		Map<String, Object> result = new HashMap<>();
+		result.put("data", resultList);
+		result.put("pageNo", pageNo);
+		result.put("pageSize", pageSize);
+		result.put("totalCount", total);
+		if (pageNo == null || pageSize == null) {
+			result.put("totalPage", 1);
+		} else {
+			result.put("totalPage", total % pageSize == 0 ? total / pageSize : total / pageSize + 1);
+		}
+		return new BaseResponse<>(200, "success", result);
 	}
 
 }

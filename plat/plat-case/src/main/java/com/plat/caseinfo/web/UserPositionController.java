@@ -1,4 +1,5 @@
 package com.plat.caseinfo.web;
+import com.plat.common.entity.BaseResponse;
 import com.plat.common.entity.Page;
 import com.plat.caseinfo.entity.UserPosition;
 import com.plat.caseinfo.service.UserPositionService;
@@ -53,6 +54,7 @@ public class UserPositionController {
 	 */
 	@PostMapping("/recent")
 	public Object getRecentPosition() {
-		return userPositionService.getRecentPosition();
+		return new BaseResponse<Object>(200, "success", userPositionService.getRecentPosition());
 	}
 }
+ 

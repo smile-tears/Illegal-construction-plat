@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.plat.common.entity.User;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @description 人员
@@ -33,5 +34,5 @@ public interface UserRepository extends JpaRepository<User,String> {
     @Modifying
 	@Query(value = "update User set RegistrationID=?1 where id = ?2 ",nativeQuery = true )
 	public Integer updateRegistrationID(String registrationID, String id);
-
+	
 }

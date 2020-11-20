@@ -179,7 +179,7 @@ public class CaseInfoCityServiceImpl implements CaseInfoCityService {
 				" end as state " +
 				"from caseinfo_city t1 " + 
 				"LEFT JOIN companymanage t2 on t1.companyid=t2.id " + 
-				"LEFT JOIN gridcommunity t3 on t1.gridId=t3.id " + 
+				"LEFT JOIN gridcommunity t3 on t2.grid=t3.id " + 
 				"LEFT JOIN user t4 on t1.reportor=t4.id "+
 				"LEFT JOIN user t5 on t1.manager=t5.id "+
 				" where 1=1 ";

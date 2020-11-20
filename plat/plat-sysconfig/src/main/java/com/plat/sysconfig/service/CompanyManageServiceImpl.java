@@ -77,7 +77,7 @@ public class CompanyManageServiceImpl implements CompanyManageService {
 			countSql += " and t1.CompanyName like '%"+companyManage.getCompanyName()+"%'";
 		}
 		if (!StringUtils.isEmpty(companyManage.getSafetyOffice())) {
-			countSql += " and t1.SafetyOffice = '"+companyManage.getSafetyOffice()+"";
+			countSql += " and t1.SafetyOffice = '"+companyManage.getSafetyOffice()+"'";
 		}
 		String dataSql = countSql;
 		if (!StringUtils.isEmpty(pageNo) && !StringUtils.isEmpty(pageSize)) {

@@ -79,6 +79,12 @@ public class CaseInfoCity implements Serializable {
 	/**
 	 * 检查时间
 	 */
+	@Column(name = "verifyTime")
+	private String verifyTime;
+	
+	/**
+	 * 上报时间
+	 */
 	@Column(name = "reportTime")
 	private String reportTime;
 	
@@ -99,7 +105,25 @@ public class CaseInfoCity implements Serializable {
 	@Column(name = "caseDesc")
 	private String caseDesc;
 	
+	/**
+	 * 纬度
+	 */
+	private String lng;
 	
+	/**
+	 * 经度
+	 */
+	private String lat;
+	
+	/**
+	 * 开始时间
+	 */
+	private String startTime;
+	
+	/**
+	 * 结束时间
+	 */
+	private String endTime;
 	
 //	/**
 //	 * 关联网格
@@ -111,22 +135,8 @@ public class CaseInfoCity implements Serializable {
 //	private GridCommunity gridCommunity;
 	
 //	
-	
-//	/**
-//	 * 位置描述
-//	 */
-//	@Column(name = "locationDesc")
-//	private String locationDesc;
 
-//	/**
-//	 * 纬度
-//	 */
-//	private String lng;
 //	
-//	/**
-//	 * 经度
-//	 */
-//	private String lat;
 	
 	/**
      * 案件上报附件名称

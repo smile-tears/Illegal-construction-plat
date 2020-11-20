@@ -1,4 +1,5 @@
 package com.plat.caseinfo.web;
+import com.plat.common.entity.BaseResponse;
 import com.plat.common.entity.Page;
 import com.plat.caseinfo.Const;
 import com.plat.caseinfo.entity.CaseInfoCity;
@@ -62,6 +63,6 @@ public class CaseInfoCityController {
 	
 	@PostMapping("/report")
 	public Object getReport() {
-		return caseInfoCityService.report();
+		return new BaseResponse<Object>(200, "success", caseInfoCityService.report());
 	}
 }

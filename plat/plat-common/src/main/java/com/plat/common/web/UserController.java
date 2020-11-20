@@ -1,4 +1,5 @@
 package com.plat.common.web;
+import com.plat.common.dao.UserRepository;
 import com.plat.common.entity.BaseResponse;
 import com.plat.common.entity.Page;
 import com.plat.common.entity.User;
@@ -19,6 +20,9 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+    
+    @Autowired
+    private UserRepository userRepository;
 
     /**
     * 新增
@@ -58,5 +62,10 @@ public class UserController {
 	@PostMapping("/token")
 	public Object getUserByToken(HttpServletRequest request) {
 		return new BaseResponse<>(200, "success", userService.getUserByToken(request));
+	}
+	
+	@PostMapping("/user-grid")
+	public Object getUserGridList(HttpServletRequest request,Page page) {
+		return userService.getUserGridList( page);
 	}
 }

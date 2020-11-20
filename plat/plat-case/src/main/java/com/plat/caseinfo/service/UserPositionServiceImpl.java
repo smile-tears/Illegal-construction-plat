@@ -81,6 +81,7 @@ public class UserPositionServiceImpl implements UserPositionService {
 		if (!StringUtils.isEmpty(endTime)) {
 			countSql += " and uploadTime<='"+endTime+"'";
 		} 
+		countSql += " order by uploadtime";
 		String dataSql = countSql;
 		if (!StringUtils.isEmpty(pageNo) && !StringUtils.isEmpty(pageSize)) {
 			Integer start = (pageNo - 1 ) * pageSize;
