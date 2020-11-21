@@ -218,11 +218,11 @@ div{
     transform: translateX(-50%);
 }
 .connect-success::before{
-    background: url('../img/success.png') no-repeat;
+    background: url('/vedio/img/success.png') no-repeat;
     background-size: 100% 100%;
 }
 .connect-fail::before{
-    background: url('../img/fail.png') no-repeat;
+    background: url('/vedio/img/fail.png') no-repeat;
     background-size: 100% 100%;
 }
 @keyframes device-loading {
@@ -473,7 +473,7 @@ div{
     content: '';
     width: 16px;
     height: 16px;
-    background: url('../img/loading.png');
+    background: url('/vedio/img/loading.png');
     background-size: 100% 100%;
     animation: loading-circle 2s linear infinite;
 }

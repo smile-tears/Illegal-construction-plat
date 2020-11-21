@@ -101,7 +101,7 @@ function setBtnClickFuc() {
   //open or close camera
   $('#video-btn').on('click', () => {
     if (isCamOn) {
-      $('#video-btn').attr('src', './img/big-camera-off.png');
+      $('#video-btn').attr('src', '/vedio/img/big-camera-off.png');
       $('#video-btn').attr('title', '打开摄像头');
       $('#member-me')
         .find('.member-video-btn')
@@ -109,7 +109,7 @@ function setBtnClickFuc() {
       isCamOn = false;
       muteVideo();
     } else {
-      $('#video-btn').attr('src', './img/big-camera-on.png');
+      $('#video-btn').attr('src', '/vedio/img/big-camera-on.png');
       $('#video-btn').attr('title', '关闭摄像头');
       $('#member-me')
         .find('.member-video-btn')
@@ -121,7 +121,7 @@ function setBtnClickFuc() {
   //open or close microphone
   $('#mic-btn').on('click', () => {
     if (isMicOn) {
-      $('#mic-btn').attr('src', './img/big-mic-off.png');
+      $('#mic-btn').attr('src', '/vedio/img/big-mic-off.png');
       $('#mic-btn').attr('title', '打开麦克风');
       $('#member-me')
         .find('.member-audio-btn')
@@ -129,7 +129,7 @@ function setBtnClickFuc() {
       isMicOn = false;
       muteAudio();
     } else {
-      $('#mic-btn').attr('src', './img/big-mic-on.png');
+      $('#mic-btn').attr('src', '/vedio/img/big-mic-on.png');
       $('#mic-btn').attr('title', '关闭麦克风');
       $('#member-me')
         .find('.member-audio-btn')
@@ -146,12 +146,12 @@ function setBtnClickFuc() {
         alert('当前浏览器不支持屏幕分享！');
         return;
       }
-      if ($('#screen-btn').attr('src') == './img/screen-on.png') {
-        $('#screen-btn').attr('src', './img/screen-off.png');
+      if ($('#screen-btn').attr('src') == '/vedio/img/screen-on.png') {
+        $('#screen-btn').attr('src', '/vedio/img/screen-off.png');
         stopSharing();
         isScreenOn = false;
       } else {
-        $('#screen-btn').attr('src', './img/screen-on.png');
+        $('#screen-btn').attr('src', '/vedio/img/screen-on.png');
         startSharing();
         isScreenOn = true;
       }
@@ -223,17 +223,17 @@ function setBtnClickFuc() {
 
   //popover事件
   $('#camera').on('show.bs.popover', () => {
-    $('#camera').attr('src', './img/camera-on.png');
+    $('#camera').attr('src', '/vedio/img/camera-on.png');
   });
   $('#camera').on('hide.bs.popover', () => {
-    $('#camera').attr('src', './img/camera.png');
+    $('#camera').attr('src', '/vedio/img/camera.png');
   });
 
   $('#microphone').on('show.bs.popover', () => {
-    $('#microphone').attr('src', './img/mic-on.png');
+    $('#microphone').attr('src', '/vedio/img/mic-on.png');
   });
   $('#microphone').on('hide.bs.popover', () => {
-    $('#microphone').attr('src', './img/mic.png');
+    $('#microphone').attr('src', '/vedio/img/mic.png');
   });
 }
 
@@ -354,9 +354,9 @@ function resetView() {
   isScreenOn = false;
   isJoined = true;
   $('#main-video-btns').hide();
-  $('#video-btn').attr('src', './img/big-camera-on.png');
-  $('#mic-btn').attr('src', './img/big-mic-on.png');
-  $('#screen-btn').attr('src', './img/screen-off.png');
+  $('#video-btn').attr('src', '/vedio/img/big-camera-on.png');
+  $('#mic-btn').attr('src', '/vedio/img/big-mic-on.png');
+  $('#screen-btn').attr('src', '/vedio/img/screen-off.png');
   $('#member-me')
     .find('.member-video-btn')
     .attr('src', 'img/camera-on.png');
