@@ -39,7 +39,7 @@ public class GridCommunity implements Serializable {
     /**
     * 责任人
     */
-    @Column(name="manager"  )
+    @Column(name="manager" ,length = 1500 )
     private String manager;
 
     /**
@@ -75,7 +75,7 @@ public class GridCommunity implements Serializable {
     /**
     * 巡查人员
     */
-    @Column(name="patrolManager"  )
+    @Column(name="patrolManager" ,length = 1500 )
     private String patrolManager;
 
     /**
