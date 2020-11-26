@@ -150,7 +150,7 @@ public class UserServiceImpl implements UserService {
 		// TODO Auto-generated method stub
 
 		String countSql = " select t1.*,t2.id as grid,t2.gridName from user t1  " + 
-				" LEFT JOIN gridcommunity t2 on instr(t2.patrolManager,t1.id)  " + 
+				" LEFT JOIN gridcommunity t2 on instr(t2.patrolManager,t1.id) > 0  " + 
 				" where t1.delTag=1 and t2.id is not null ";
 
 		String dataSql = countSql;

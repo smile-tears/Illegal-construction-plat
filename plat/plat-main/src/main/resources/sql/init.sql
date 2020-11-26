@@ -32,6 +32,11 @@ SELECT '5' id,'公司管理' menuName, '/appMaintainSystem/companyManage' path ,
 from dual where not EXISTS (select 1 from menu where id='5');
 
 insert into menu (id,menuName,path,name,component,redirect,meta,supMenuid,visible,showOrder) 
+SELECT '55' id,'违建类型管理' menuName, '/appMaintainSystem/questionType' path , 'questionType' name, 'appMaintainSystem/questiontype/QuestionTypeList' component, null redirect, 
+'{ title: "违建类型管理", icon: "solution", keepAlive: true, permission: [ "support" ] }' meta, '3' supMenuid,0 visible,55 showOrder
+from dual where not EXISTS (select 1 from menu where id='55');
+
+insert into menu (id,menuName,path,name,component,redirect,meta,supMenuid,visible,showOrder) 
 SELECT '6' id,'基础数据子系统' menuName ,'/baseDataSystem' path , 'baseDataSystem' name, 'PageView' component, null redirect, 
 '{ title: "基础数据子系统", icon: "team", permission: ["dashboard"] }' meta, '1' supMenuid,0 visible,6 showOrder
 from dual where not EXISTS (select 1 from menu where id='6');

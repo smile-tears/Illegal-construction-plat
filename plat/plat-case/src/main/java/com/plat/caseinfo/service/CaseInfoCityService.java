@@ -18,4 +18,6 @@ public interface CaseInfoCityService {
 	public Object find2(CaseInfoCity caseInfoCity, Page page,HttpServletRequest request );
 	
 	public Object report();
+	
+	public Object report2();
 }

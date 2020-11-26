@@ -11,6 +11,4 @@ public interface QuestionTypeService {
 	public Object Update(QuestionType questionType);
 
 	public Object find(QuestionType questionType, Page page);
-	
-	public Object tree(String id);
 }

@@ -12,7 +12,7 @@ import java.util.Date;
 /**
  * @description 问题类型
  * @author admin
- * @date 2020-06-08 21:52:10
+ * @date 2020-11-26 18:34:01
  */
 @Entity
 @Data
@@ -37,59 +37,11 @@ public class QuestionType implements Serializable {
     private String typeName;
 
     /**
-    * 行政区划代码
+    * 显示顺序
     */
-    @Column(name="areaCode"  )
-    private String areaCode;
+    @Column(name="showOrder"  )
+    private Integer showOrder;
 
-    /**
-    * 大类码
-    */
-    @Column(name="bigCode"  )
-    private String bigCode;
-
-    /**
-    * 小类码
-    */
-    @Column(name="smallCode"  )
-    private String smallCode;
-
-    /**
-    * 分数
-    */
-    @Column(name="score"  )
-    private Integer score;
-
-    /**
-    * 别名
-    */
-    @Column(name="alias"  )
-    private String alias;
-
-    /**
-    * 快捷名称
-    */
-    @Column(name="shortcutName"  )
-    private String shortcutName;
-
-    /**
-    * 处理时限
-    */
-    @Column(name="processTimeLimit"  )
-    private Float processTimeLimit;
-
-    /**
-    * 父级id
-    */
-    @Column(name="pid"  )
-    private String pid;
-
-    /**
-     * showOrder
-     */
-     @Column(name="showOrder"  )
-     private String showOrder;
-     
 	/**
 	 * 删除标记
 	 */

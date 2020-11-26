@@ -113,6 +113,9 @@ public class CaseInfoCityServiceImpl implements CaseInfoCityService {
 					String endDate = IntervalTimeUtil.getEndDate(currentTime,
 							caseInfoCity.getLimittimes() , getCalculateType());
 					caseInfoCity.setEndDate(endDate);
+				} else if (caseInfoCity.getStatus() == 2) {
+					String currentTime = TimeUtil.getNowTime();
+					caseInfoCity.setHandleDate(currentTime);
 				}
 				
 			} catch (ParseException e) {
@@ -238,7 +241,7 @@ public class CaseInfoCityServiceImpl implements CaseInfoCityService {
 		List<Map<String, Object>> list = caseInfoCityRepository.report();
 		for (Iterator<Map<String, Object>> iterator = list.iterator(); iterator.hasNext();) {
 			Map<String, Object> map = (Map<String, Object>) iterator.next();
-			System.out.println("======"+JSONObject.toJSONString(map));
+			//System.out.println("======"+JSONObject.toJSONString(map));
 			Integer status = (Integer)map.get("status");
 			if (status == 2) {
 				jrczs = Integer.parseInt(String.valueOf(map.get("num")));
@@ -252,6 +255,67 @@ public class CaseInfoCityServiceImpl implements CaseInfoCityService {
 		result.put("今日上报数", jrsbs);
 		result.put("今日待处置数", jrdcz);
 		return result;
+	}
+
+	@Override
+	public Object report2() {
+		// TODO Auto-generated method stub
+		
+		String sql1 = "select t.*,concat( FORMAT(dealedNum * 100.0 / reportNum ,2), '%')as dealedPercent, "
+				+" concat( FORMAT(overtimeNum * 100.0 / reportNum ,2), '%') as overtimePercent  " + 
+				"from ( " + 
+				"SELECT t3.name manager,t2.gridName,count(1) reportNum,sum(case t1.status when 2 then 1 else 0 end) dealedNum,  " + 
+				"sum(    " + 
+				"case when handledate is null then  " + 
+				"	(case when date_format(now(),'%Y-%m-%d %H:%m:%s') > enddate then 1 else 0 end) " + 
+				"ELSE " + 
+				"	(case when handledate>enddate then 1 else 0 end) " + 
+				"end  " + 
+				") overtimeNum , 0 as rowSpan" + 
+				" from caseinfo_city t1    " + 
+				"JOIN gridcommunity t2 on instr(t2.patrolManager,t1.reportor) > 0   " + 
+				"LEFT JOIN user t3 on t1.reportor=t3.id   " + 
+				"where t1.status<>0   " + 
+				"GROUP BY t3.name,t2.gridName ORDER BY t2.gridName,t3.name) t  ";
+
+		List<Map<String, String>> data1 = entityManager.createNativeQuery(sql1).unwrap(NativeQueryImpl.class)
+				.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP).getResultList();
+//		for(int i=0; i<data1.size(); i++) {
+//			Map<String, String> map = data1.get(i);
+//			String gridName = map.get("gridName");
+//			
+//		}
+		String sql2 = "SELECT t2.typeName item,count(1) count from caseinfo_city t1 " + 
+				" LEFT JOIN questiontype t2 on t1.questiontype=t2.id " + 
+				" where t1.status<>0 GROUP BY t1.questiontype,t2.typeName,t2.showorder "+
+				" order by t2.showorder";
+		List<Map<String, String>> data2 = entityManager.createNativeQuery(sql2).unwrap(NativeQueryImpl.class)
+				.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP).getResultList();
+		
+		String areaSql = "SELECT id,gridName,patrolManager from gridcommunity "
+				+" where patrolManager is not null and patrolManager<>'' " 
+				+" ORDER BY showOrder ";
+		List<Map<String, String>> areaList = entityManager.createNativeQuery(areaSql).unwrap(NativeQueryImpl.class)
+				.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP).getResultList();
+		
+		String sql3 = " SELECT t1.typeName as name"; 
+		for (int i=0 ;i <areaList.size(); i++) {
+			Map<String, String> area = areaList.get(i);
+			sql3 += "  ,( select count(1) from caseinfo_city t "
+					+" JOIN gridcommunity t3 on instr(t3.patrolManager,t.reportor) > 0 "
+					+" where t3.id='"+area.get("id")+"' ) as "+area.get("gridName");
+		}
+		sql3 += " from questiontype t1 GROUP BY t1.typeName,t1.showOrder order by t1.showOrder";
+		List<Map<String, String>> data3 = entityManager.createNativeQuery(sql3).unwrap(NativeQueryImpl.class)
+				.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP).getResultList();
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("tableData", data1);
+		jsonObject.put("pieData", data2);
+		jsonObject.put("barData", data3);
+//		System.out.println("========="+sql1);
+//		System.out.println("========="+sql2);
+//		System.out.println("========="+sql3);
+		return jsonObject;
 	}
 
 	

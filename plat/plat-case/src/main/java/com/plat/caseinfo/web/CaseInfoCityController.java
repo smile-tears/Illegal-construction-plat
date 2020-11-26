@@ -65,4 +65,9 @@ public class CaseInfoCityController {
 	public Object getReport() {
 		return new BaseResponse<Object>(200, "success", caseInfoCityService.report());
 	}
+	
+	@PostMapping("/report2")
+	public Object getReport2() {
+		return new BaseResponse<Object>(200, "success", caseInfoCityService.report2());
+	}
 }

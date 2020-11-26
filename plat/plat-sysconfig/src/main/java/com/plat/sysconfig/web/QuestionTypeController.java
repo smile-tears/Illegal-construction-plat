@@ -4,12 +4,11 @@ import com.plat.sysconfig.entity.QuestionType;
 import com.plat.sysconfig.service.QuestionTypeService;
 
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.bind.annotation.RequestParam;
 @RestController
 @RequestMapping("/questionType")
 public class QuestionTypeController {
@@ -47,13 +46,5 @@ public class QuestionTypeController {
 	@PostMapping("/find")
 	public Object find(QuestionType questionType, Page page) {
 		return questionTypeService.find(questionType,page);
-	}
-	
-	/**
-	 * 获取问题类型树
-	 */
-	@PostMapping("/tree")
-	public Object getTree(@RequestParam(value = "id", defaultValue = "0") String id) {
-		return questionTypeService.tree(id);
 	}
 }

@@ -125,6 +125,11 @@ public class CaseInfoCity implements Serializable {
 	 */
 	private String endTime;
 	
+	/**
+	 * 违建类型
+	 */
+	private String questionType;
+	
 //	/**
 //	 * 关联网格
 //	 */
@@ -180,6 +185,11 @@ public class CaseInfoCity implements Serializable {
 	 */
 	@Column(name = "handleIdea")
 	private String handleIdea;
+	
+	/**
+	 * 案件结束时间
+	 */
+	private String handleDate;
 	
 	/**
      * 案件处置附件路径
