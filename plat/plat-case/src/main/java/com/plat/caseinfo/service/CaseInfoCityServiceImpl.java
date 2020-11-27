@@ -258,7 +258,7 @@ public class CaseInfoCityServiceImpl implements CaseInfoCityService {
 	}
 
 	@Override
-	public Object report2() {
+	public Object report2(String startDate,String endDate) {
 		// TODO Auto-generated method stub
 		
 		String sql1 = "select t.*,concat( FORMAT(dealedNum * 100.0 / reportNum ,2), '%')as dealedPercent, "
@@ -275,20 +275,46 @@ public class CaseInfoCityServiceImpl implements CaseInfoCityService {
 				" from caseinfo_city t1    " + 
 				"JOIN gridcommunity t2 on instr(t2.patrolManager,t1.reportor) > 0   " + 
 				"LEFT JOIN user t3 on t1.reportor=t3.id   " + 
-				"where t1.status<>0   " + 
-				"GROUP BY t3.name,t2.gridName ORDER BY t2.gridName,t3.name) t  ";
+				"where t1.status<>0   "; 
+		if (!StringUtils.isEmpty(startDate)) {
+			sql1 += " and substr(t1.reportTime,1,10)>='"+startDate+"'";
+		}
+		if (!StringUtils.isEmpty(endDate)) {
+			sql1 += " and substr(t1.reportTime,1,10)<='"+startDate+"'";
+		}
+		sql1 += "GROUP BY t3.name,t2.gridName ORDER BY t2.gridName,t3.name) t  ";
 
 		List<Map<String, String>> data1 = entityManager.createNativeQuery(sql1).unwrap(NativeQueryImpl.class)
 				.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP).getResultList();
-//		for(int i=0; i<data1.size(); i++) {
-//			Map<String, String> map = data1.get(i);
-//			String gridName = map.get("gridName");
-//			
-//		}
-		String sql2 = "SELECT t2.typeName item,count(1) count from caseinfo_city t1 " + 
+		List<String> gridNameList = new ArrayList<>();
+		for(int i=0; i<data1.size(); i++) {
+			Map<String, String> map = data1.get(i);
+			String gridName = map.get("gridName");
+			if (gridNameList.contains(gridName)) {
+				map.put("rowSpan", "0");
+			} else {
+				gridNameList.add(gridName);
+				int index = 0;
+				for(int j=i+1; j<data1.size(); j++) {
+					if (data1.get(j).get("gridName").equals(gridName)) {
+						index++;
+					} else {
+						break;
+					}
+				}
+				map.put("rowSpan", index+"");
+			}
+		}
+		String sql2 = "SELECT ifnull(t2.typeName,'其它') item,count(1) count from caseinfo_city t1 " + 
 				" LEFT JOIN questiontype t2 on t1.questiontype=t2.id " + 
-				" where t1.status<>0 GROUP BY t1.questiontype,t2.typeName,t2.showorder "+
-				" order by t2.showorder";
+				" where t1.status<>0  ";
+		if (!StringUtils.isEmpty(startDate)) {
+			sql2 += " and substr(t1.reportTime,1,10)>='"+startDate+"'";
+		}
+		if (!StringUtils.isEmpty(endDate)) {
+			sql2 += " and substr(t1.reportTime,1,10)<='"+startDate+"'";
+		}
+		sql2 += " GROUP BY t1.questiontype,t2.typeName,t2.showorder order by t2.showorder";
 		List<Map<String, String>> data2 = entityManager.createNativeQuery(sql2).unwrap(NativeQueryImpl.class)
 				.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP).getResultList();
 		
@@ -303,7 +329,14 @@ public class CaseInfoCityServiceImpl implements CaseInfoCityService {
 			Map<String, String> area = areaList.get(i);
 			sql3 += "  ,( select count(1) from caseinfo_city t "
 					+" JOIN gridcommunity t3 on instr(t3.patrolManager,t.reportor) > 0 "
-					+" where t3.id='"+area.get("id")+"' ) as "+area.get("gridName");
+					+" where t3.id='"+area.get("id")+"' and t.questiontype=t1.id ";
+			if (!StringUtils.isEmpty(startDate)) {
+				sql3 += " and substr(t.reportTime,1,10)>='"+startDate+"'";
+			}
+			if (!StringUtils.isEmpty(endDate)) {
+				sql3 += " and substr(t.reportTime,1,10)<='"+startDate+"'";
+			}
+			sql3 += " ) as "+area.get("gridName");
 		}
 		sql3 += " from questiontype t1 GROUP BY t1.typeName,t1.showOrder order by t1.showOrder";
 		List<Map<String, String>> data3 = entityManager.createNativeQuery(sql3).unwrap(NativeQueryImpl.class)

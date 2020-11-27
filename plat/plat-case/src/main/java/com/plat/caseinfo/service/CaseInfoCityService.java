@@ -19,5 +19,5 @@ public interface CaseInfoCityService {
 	
 	public Object report();
 	
-	public Object report2();
+	public Object report2(String startDate,String endDate);
 }
