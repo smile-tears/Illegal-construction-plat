@@ -28,4 +28,10 @@ public class CityManageController {
         return "Vedio";
     }
 
+    @RequestMapping("/download")
+    public String download(Model model){
+        System.out.println("vedio=============");
+        model.addAttribute("msg","后台msg");
+        return "download";
+    }
 }
