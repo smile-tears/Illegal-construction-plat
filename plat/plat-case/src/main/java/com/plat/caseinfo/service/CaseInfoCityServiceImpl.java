@@ -198,7 +198,7 @@ public class CaseInfoCityServiceImpl implements CaseInfoCityService {
 					countSql += " and t1.reportor='"+caseInfoCity.getReportor()+"'";
 				}
 			} else if (caseInfoCity.getStatus() == 2) { // 综合查询
-				countSql += " and t1.status =2 ";
+				countSql += " and t1.status <>0 ";
 			}
 		}
 		
