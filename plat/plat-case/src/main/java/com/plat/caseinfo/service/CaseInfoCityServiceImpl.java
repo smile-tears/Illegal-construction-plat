@@ -32,7 +32,10 @@ import com.plat.common.entity.Page;
 import com.plat.common.entity.User;
 import com.plat.common.service.UserService;
 import com.plat.common.utils.BeanProcessUtils;
+import com.plat.common.utils.StringUtil;
 import com.plat.common.utils.TimeUtil;
+import com.plat.common.utils.WordUtil;
+import com.plat.common.web.FileController;
 import com.plat.sysconfig.dao.SysGlobalConfigRepository;
 import com.plat.sysconfig.entity.SysGlobalConfig;
 import com.plat.sysconfig.util.IntervalTimeUtil;
@@ -168,7 +171,7 @@ public class CaseInfoCityServiceImpl implements CaseInfoCityService {
 	
 	@Override
 	@Transactional(readOnly = true) // 解决 com.sun.proxy.$Proxy306 cannot be cast to org.hibernate.query.internal.NativeQueryImpl
-	public Object find2(CaseInfoCity caseInfoCity, Page page,HttpServletRequest request ) {
+	public JSONObject find2(CaseInfoCity caseInfoCity, Page page,HttpServletRequest request ) {
 		//String currentUserId = "";
 		//if (request != null) currentUserId = userService.getUserByToken(request).getId();
 		Integer pageNo = page.getPageNo();
@@ -186,6 +189,9 @@ public class CaseInfoCityServiceImpl implements CaseInfoCityService {
 				"LEFT JOIN user t4 on t1.reportor=t4.id "+
 				"LEFT JOIN user t5 on t1.manager=t5.id "+
 				" where 1=1 ";
+		if (!StringUtils.isEmpty(caseInfoCity.getId())) {
+			countSql += " and t1.id='"+caseInfoCity.getId()+"'";
+		}
 		if (!StringUtils.isEmpty(caseInfoCity.getStatus())) {
 			if (caseInfoCity.getStatus() == 0 ) { // 案件待上报
 				countSql += " and t1.status=0 ";
@@ -217,7 +223,7 @@ public class CaseInfoCityServiceImpl implements CaseInfoCityService {
 		int total = entityManager.createNativeQuery(countSql).getResultList().size();
 		List<Map<String, Object>> resultList = entityManager.createNativeQuery(dataSql)
 				.unwrap(NativeQueryImpl.class).setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP).getResultList();
-		Map<String, Object> result = new HashMap<>();
+		JSONObject result = new JSONObject();
 		result.put("data", resultList);
 		result.put("pageNo", pageNo); 
 		result.put("pageSize", pageSize);
@@ -227,8 +233,8 @@ public class CaseInfoCityServiceImpl implements CaseInfoCityService {
 		} else {
 			result.put("totalPage", total % pageSize == 0 ? total / pageSize : total / pageSize + 1);
 		}
-		return new BaseResponse<>(200, "success", result);
-		// return null;
+		//return new BaseResponse<>(200, "success", result);
+		return result;
 	}
 
 	@Override
@@ -258,7 +264,7 @@ public class CaseInfoCityServiceImpl implements CaseInfoCityService {
 	}
 
 	@Override
-	public Object report2(String startDate,String endDate) {
+	public Object report2(String startDate,String endDate,String grid,String manager) {
 		// TODO Auto-generated method stub
 		
 		String sql1 = "select t.*,concat( FORMAT(dealedNum * 100.0 / reportNum ,2), '%')as dealedPercent, "
@@ -271,7 +277,7 @@ public class CaseInfoCityServiceImpl implements CaseInfoCityService {
 				"ELSE " + 
 				"	(case when handledate>enddate then 1 else 0 end) " + 
 				"end  " + 
-				") overtimeNum , 0 as rowSpan" + 
+				") overtimeNum , 1 as rowSpan" + 
 				" from caseinfo_city t1    " + 
 				"JOIN gridcommunity t2 on instr(t2.patrolManager,t1.reportor) > 0   " + 
 				"LEFT JOIN user t3 on t1.reportor=t3.id   " + 
@@ -281,6 +287,12 @@ public class CaseInfoCityServiceImpl implements CaseInfoCityService {
 		}
 		if (!StringUtils.isEmpty(endDate)) {
 			sql1 += " and substr(t1.reportTime,1,10)<='"+startDate+"'";
+		}
+		if (!StringUtils.isEmpty(grid)) {
+			sql1 += " and t2.id='"+grid+"'";
+		}
+		if (!StringUtils.isEmpty(manager)) {
+			sql1 += " and t1.reportor='"+manager+"'";
 		}
 		sql1 += "GROUP BY t3.name,t2.gridName ORDER BY t2.gridName,t3.name) t  ";
 
@@ -295,7 +307,7 @@ public class CaseInfoCityServiceImpl implements CaseInfoCityService {
 			} else {
 				gridNameList.add(gridName);
 				int index = 0;
-				for(int j=i+1; j<data1.size(); j++) {
+				for(int j=i; j<data1.size(); j++) {
 					if (data1.get(j).get("gridName").equals(gridName)) {
 						index++;
 					} else {
@@ -305,8 +317,9 @@ public class CaseInfoCityServiceImpl implements CaseInfoCityService {
 				map.put("rowSpan", index+"");
 			}
 		}
-		String sql2 = "SELECT ifnull(t2.typeName,'其它') item,count(1) count from caseinfo_city t1 " + 
+		String sql2 = "SELECT t1.questiontype,t2.typeName,ifnull(t2.typeName,'其它') item,count(1) count from caseinfo_city t1 " + 
 				" LEFT JOIN questiontype t2 on t1.questiontype=t2.id " + 
+				" left JOIN gridcommunity t3 on instr(t3.patrolManager,t1.reportor) > 0   " + 
 				" where t1.status<>0  ";
 		if (!StringUtils.isEmpty(startDate)) {
 			sql2 += " and substr(t1.reportTime,1,10)>='"+startDate+"'";
@@ -314,17 +327,26 @@ public class CaseInfoCityServiceImpl implements CaseInfoCityService {
 		if (!StringUtils.isEmpty(endDate)) {
 			sql2 += " and substr(t1.reportTime,1,10)<='"+startDate+"'";
 		}
+		if (!StringUtils.isEmpty(grid)) {
+			sql2 += " and t3.id='"+grid+"'";
+		}
+		if (!StringUtils.isEmpty(manager)) {
+			sql2 += " and t1.reportor='"+manager+"'";
+		}
 		sql2 += " GROUP BY t1.questiontype,t2.typeName,t2.showorder order by t2.showorder";
 		List<Map<String, String>> data2 = entityManager.createNativeQuery(sql2).unwrap(NativeQueryImpl.class)
 				.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP).getResultList();
 		
 		String areaSql = "SELECT id,gridName,patrolManager from gridcommunity "
-				+" where patrolManager is not null and patrolManager<>'' " 
-				+" ORDER BY showOrder ";
+				+" where patrolManager is not null and patrolManager<>'' " ;
+		if (!StringUtils.isEmpty(grid)) {
+			areaSql += " and id='"+grid+"'";
+		}
+		areaSql += " ORDER BY showOrder ";
 		List<Map<String, String>> areaList = entityManager.createNativeQuery(areaSql).unwrap(NativeQueryImpl.class)
 				.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP).getResultList();
 		
-		String sql3 = " SELECT t1.typeName as name"; 
+		String sql3 = " SELECT t1.showOrder,t1.typeName as name"; 
 		for (int i=0 ;i <areaList.size(); i++) {
 			Map<String, String> area = areaList.get(i);
 			sql3 += "  ,( select count(1) from caseinfo_city t "
@@ -336,11 +358,26 @@ public class CaseInfoCityServiceImpl implements CaseInfoCityService {
 			if (!StringUtils.isEmpty(endDate)) {
 				sql3 += " and substr(t.reportTime,1,10)<='"+startDate+"'";
 			}
+			if (!StringUtils.isEmpty(grid)) {
+				sql3 += " and t3.id='"+grid+"'";
+			}
+			if (!StringUtils.isEmpty(manager)) {
+				sql3 += " and t.reportor='"+manager+"'";
+			}
 			sql3 += " ) as "+area.get("gridName");
 		}
 		sql3 += " from questiontype t1 GROUP BY t1.typeName,t1.showOrder order by t1.showOrder";
 		List<Map<String, String>> data3 = entityManager.createNativeQuery(sql3).unwrap(NativeQueryImpl.class)
 				.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP).getResultList();
+		for (int i=0; i<data2.size(); i++) {
+			Map<String, String> map = data2.get(i);
+			map.remove("typeName");
+			map.remove("questiontype");
+		}
+		for (int i=0; i<data3.size(); i++) {
+			Map<String, String> map = data3.get(i);
+			map.remove("showOrder");
+		}
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("tableData", data1);
 		jsonObject.put("pieData", data2);
@@ -349,6 +386,48 @@ public class CaseInfoCityServiceImpl implements CaseInfoCityService {
 //		System.out.println("========="+sql2);
 //		System.out.println("========="+sql3);
 		return jsonObject;
+	}
+
+	@Override
+	public Object exportWord(String id) {
+		// TODO Auto-generated method stub
+		CaseInfoCity caseInfoCity = new CaseInfoCity();
+		caseInfoCity.setId(id);
+		JSONObject json = find2(caseInfoCity, new Page(), null);
+		JSONArray jsonArray = json.getJSONArray("data");
+		JSONObject jo = new JSONObject();
+		if (jsonArray.size() > 0) jo = jsonArray.getJSONObject(0);
+		//System.out.println("========"+jo.toJSONString());
+		Map<String, Object> map = new HashMap<>();
+		String reportTime = jo.getString("reportTime");
+		map.put("year", reportTime.substring(0,4));
+		map.put("month", reportTime.substring(5,7));
+		map.put("companyName", StringUtil.null2String(jo.getString("companyName")));
+		map.put("locationDesc", StringUtil.null2String(jo.getString("locationDesc")));
+		map.put("manager", StringUtil.null2String(jo.getString("manager")));
+		map.put("managerMobile", StringUtil.null2String(jo.getString("managerMobile")));
+		map.put("reportor", StringUtil.null2String(jo.getString("reportorName")));
+		map.put("reportorMobile", StringUtil.null2String(jo.getString("reportorMobile")));
+		map.put("site", StringUtil.null2String(jo.getString("site")));
+		map.put("startTime", StringUtil.null2String(jo.getString("startTime")));
+		map.put("endTime", StringUtil.null2String(jo.getString("endTime")));
+		String endDate = jo.getString("endDate");
+		map.put("year2", endDate.substring(0,4));
+		map.put("month2", endDate.substring(5,7));
+		map.put("day2", reportTime.substring(8,10));
+		
+		String currentDate = TimeUtil.getNowTime();
+		map.put("year3", currentDate.substring(0,4));
+		map.put("month3", currentDate.substring(5,7));
+		map.put("day3", currentDate.substring(8,10));
+		
+		String uuid = jo.getString("id");
+		String url = FileController.absolute + uuid+".doc";
+		
+		String dir = FileController.absolute;
+		String filename = "word.ftl";
+		String result = WordUtil.createWord(url,map,dir,filename);	
+		return result.equals("") ? ("/file/" + uuid+".doc") : result;
 	}
 
 	

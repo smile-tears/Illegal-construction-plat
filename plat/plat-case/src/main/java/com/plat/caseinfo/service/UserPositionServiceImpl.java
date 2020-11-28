@@ -83,6 +83,7 @@ public class UserPositionServiceImpl implements UserPositionService {
 		} 
 		countSql += " order by uploadtime";
 		String dataSql = countSql;
+		String countSql2 = countSql;
 		if (!StringUtils.isEmpty(pageNo) && !StringUtils.isEmpty(pageSize)) {
 			Integer start = (pageNo - 1 ) * pageSize;
 			Integer offset = pageSize;
@@ -90,11 +91,13 @@ public class UserPositionServiceImpl implements UserPositionService {
 		}
 		// System.out.println("=========="+dataSql);
 		int total = entityManager.createNativeQuery(countSql).getResultList().size();
-		List<Map<String, Object>> resultList = entityManager.createNativeQuery(dataSql)
+		List<Map<String, Object>> tableData = entityManager.createNativeQuery(dataSql)
 				.unwrap(NativeQueryImpl.class).setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP).getResultList();
-
+		List<Map<String, Object>> data = entityManager.createNativeQuery(countSql2)
+				.unwrap(NativeQueryImpl.class).setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP).getResultList();
 		Map<String, Object> result = new HashMap<>();
-		result.put("data", resultList);
+		result.put("data", data);
+		result.put("tableData", tableData);
 		result.put("pageNo", page.getPageNo());
 		result.put("totalCount", total);
 		if (page.getPageNo() != null && page.getPageSize() !=null ) {

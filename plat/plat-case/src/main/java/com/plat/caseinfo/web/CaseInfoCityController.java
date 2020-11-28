@@ -58,7 +58,8 @@ public class CaseInfoCityController {
 	 */
 	@PostMapping("/find2")
 	public Object find( CaseInfoCity caseInfoCity, Page page,HttpServletRequest request) {
-		return caseInfoCityService.find2(caseInfoCity, page, request);
+		//return caseInfoCityService.find2(caseInfoCity, page, request);
+		return new BaseResponse<Object>(200, "success", caseInfoCityService.find2(caseInfoCity, page, request));
 	}
 	
 	@PostMapping("/report")
@@ -67,7 +68,12 @@ public class CaseInfoCityController {
 	}
 	
 	@PostMapping("/report2")
-	public Object getReport2(String startDate,String endDate) {
-		return new BaseResponse<Object>(200, "success", caseInfoCityService.report2(startDate,endDate));
+	public Object getReport2(String startDate,String endDate,String grid,String manager) {
+		return new BaseResponse<Object>(200, "success", caseInfoCityService.report2(startDate,endDate,grid,manager));
+	}
+	
+	@PostMapping("/word")
+	public Object exportWord(String id) {
+		return new BaseResponse<Object>(200, "success", caseInfoCityService.exportWord(id));
 	}
 }

@@ -28,6 +28,8 @@ import java.util.UUID;
 @RestController
 public class FileController {
 
+	public static String absolute = "C:\\Users\\Administrator\\Desktop\\java\\file\\";
+	
 	public static String getUUID() {
 		// TODO Auto-generated method stub
 		return UUID.randomUUID().toString().replaceAll("-", "");

@@ -15,6 +15,10 @@ import java.util.*;
  */
 public class StringUtil {
 
+	public static String null2String(String str) {
+        return str == null ? "" : str;
+    }
+	
     /**
      * 默认随机数范围
      */
