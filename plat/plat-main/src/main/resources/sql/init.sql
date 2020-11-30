@@ -71,15 +71,15 @@ SELECT '12' id, '监督受理子系统' menuName,'/superviseAcceptSystem' path ,
 '{ title: "监督受理子系统", icon: "eye"}' meta, '1' supMenuid,0 visible,12 showOrder
 from dual where not EXISTS (select 1 from menu where id='12');
 
-insert into menu (id,menuName,path,name,props,component,redirect,meta,supMenuid,visible,showOrder) 
-SELECT '13' id, '案件上报' menuName,'/superviseAcceptSystem/caseReport' path , 'caseReport' name, '{page: "0"}' props, 'appMaintainSystem/case/ReportList' component, null redirect, 
-'{ title: "案件上报", icon: "solution"}' meta, '12' supMenuid,0 visible,13 showOrder
-from dual where not EXISTS (select 1 from menu where id='13');
-
-insert into menu (id,menuName,path,name,props,component,redirect,meta,supMenuid,visible,showOrder) 
-SELECT '14' id,'案件处置' menuName, '/superviseAcceptSystem/caseHandle' path , 'caseHandle' name, '{page: "1"}' props, 'appMaintainSystem/case/ReportList' component, null redirect, 
-'{ title: "案件处置", icon: "solution"}' meta, '12' supMenuid,0 visible,14 showOrder
-from dual where not EXISTS (select 1 from menu where id='14');
+--insert into menu (id,menuName,path,name,props,component,redirect,meta,supMenuid,visible,showOrder) 
+--SELECT '13' id, '案件上报' menuName,'/superviseAcceptSystem/caseReport' path , 'caseReport' name, '{page: "0"}' props, 'appMaintainSystem/case/ReportList' component, null redirect, 
+--'{ title: "案件上报", icon: "solution"}' meta, '12' supMenuid,0 visible,13 showOrder
+--from dual where not EXISTS (select 1 from menu where id='13');
+--
+--insert into menu (id,menuName,path,name,props,component,redirect,meta,supMenuid,visible,showOrder) 
+--SELECT '14' id,'案件处置' menuName, '/superviseAcceptSystem/caseHandle' path , 'caseHandle' name, '{page: "1"}' props, 'appMaintainSystem/case/ReportList' component, null redirect, 
+--'{ title: "案件处置", icon: "solution"}' meta, '12' supMenuid,0 visible,14 showOrder
+--from dual where not EXISTS (select 1 from menu where id='14');
 
 insert into menu (id,menuName,path,name,props,component,redirect,meta,supMenuid,visible,showOrder) 
 SELECT '15' id,'案件查询' menuName, '/superviseAcceptSystem/caseSearch' path , 'caseSearch' name, '{page: "2"}' props, 'appMaintainSystem/case/ReportList' component, null redirect, 

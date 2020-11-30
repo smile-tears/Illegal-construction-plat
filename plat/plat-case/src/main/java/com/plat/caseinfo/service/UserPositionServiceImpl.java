@@ -42,6 +42,10 @@ public class UserPositionServiceImpl implements UserPositionService {
 	@Override
 	public Object save(UserPosition userPosition) {
 		// TODO Auto-generated method stub
+		if (StringUtils.isEmpty(userPosition.getLng()) ||StringUtils.isEmpty(userPosition.getLat()) ) {
+			return new BaseResponse<>(500, "经纬度坐标不全！");
+		}
+		
 		userPosition.setUploadTime(TimeUtil.getNowTime());
 		return new BaseResponse<>(200, "success", userPositionRepository.save(userPosition));
 	}
