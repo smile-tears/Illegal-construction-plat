@@ -104,9 +104,9 @@ public class CaseInfoCityServiceImpl implements CaseInfoCityService {
 	@Override
 	public Object Update(CaseInfoCity target) { // double类型会映射成0.0
 		// TODO Auto-generated method stub
-		if (StringUtils.isEmpty(target.getLng()) ||StringUtils.isEmpty(target.getLat()) ) {
-			return new BaseResponse<>(500, "经纬度坐标不全！");
-		}
+//		if (StringUtils.isEmpty(target.getLng()) ||StringUtils.isEmpty(target.getLat()) ) {
+//			return new BaseResponse<>(500, "经纬度坐标不全！");
+//		}
 		Optional<CaseInfoCity> source = caseInfoCityRepository.findById(target.getId());
 		if (source.isPresent()) {
 			//System.out.println("=======source="+JSON.toJSONString(source));
@@ -178,8 +178,8 @@ public class CaseInfoCityServiceImpl implements CaseInfoCityService {
 	@Override
 	@Transactional(readOnly = true) // 解决 com.sun.proxy.$Proxy306 cannot be cast to org.hibernate.query.internal.NativeQueryImpl
 	public JSONObject find2(CaseInfoCity caseInfoCity, Page page,HttpServletRequest request ) {
-	    String currentUserId = "";
-		if (request != null) currentUserId = userService.getUserByToken(request).getId();
+	    //String currentUserId = "";
+		//if (request != null) currentUserId = userService.getUserByToken(request).getId();
 		Integer pageNo = page.getPageNo();
 		Integer pageSize = page.getPageSize();
 		// TODO Auto-generated method stub
@@ -201,13 +201,13 @@ public class CaseInfoCityServiceImpl implements CaseInfoCityService {
 		if (!StringUtils.isEmpty(caseInfoCity.getStatus())) {
 			if (caseInfoCity.getStatus() == 0 ) { // 案件待上报
 				countSql += " and t1.status=0 ";
-				if (!StringUtils.isEmpty(currentUserId)) {
-					countSql += " and t1.reportor='"+currentUserId+"'";
+				if (!StringUtils.isEmpty(caseInfoCity.getReportor())) {
+					countSql += " and t1.reportor='"+caseInfoCity.getReportor()+"'";
 				}
 			} else if (caseInfoCity.getStatus() == 1) { // 案件待处置
 				countSql += " and t1.status=1 ";
-				if (!StringUtils.isEmpty(currentUserId)) {
-					countSql += " and t1.reportor='"+currentUserId+"'";
+				if (!StringUtils.isEmpty(caseInfoCity.getReportor())) {
+					countSql += " and t1.reportor='"+caseInfoCity.getReportor()+"'";
 				}
 			} else if (caseInfoCity.getStatus() == 2) { // 综合查询
 				countSql += " and t1.status <>0 ";
