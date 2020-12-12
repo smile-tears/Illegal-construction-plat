@@ -417,6 +417,29 @@ public class CaseInfoCityServiceImpl implements CaseInfoCityService {
 		map.put("site", StringUtil.null2String(jo.getString("site")));
 		map.put("startTime", StringUtil.null2String(jo.getString("startTime")));
 		map.put("endTime", StringUtil.null2String(jo.getString("endTime")));
+		map.put("caseDesc", StringUtil.null2String(jo.getString("caseDesc")));
+		
+		//处置前图片
+		List<String> imageList1 = new ArrayList<>();
+		map.put("imageList1", imageList1);
+		String imagePath = StringUtil.null2String(jo.getString("imagePath"));
+		String[] imgPathArr = imagePath.split(",");
+		for (String path : imgPathArr) {
+			if ("".equals(path)) continue;
+			path = path.replace("/avatar/", "");
+			imageList1.add(WordUtil.getImageBase(FileController.imageAbsolute + path));
+		}
+		//处置后图片
+		map.put("imageList2", new ArrayList<>());
+		String imagePath2 = StringUtil.null2String(jo.getString("imagePath2"));
+		List<String> imageList2 = new ArrayList<>();
+		String[] imgPathArr2 = imagePath2.split(",");
+		for (String path2 : imgPathArr2) {
+			if ("".equals(path2)) continue;
+			path2 = path2.replace("/avatar/", "");
+			imageList2.add(WordUtil.getImageBase(FileController.imageAbsolute + path2));
+		}
+		
 		String endDate = jo.getString("endDate");
 		map.put("year2", endDate.substring(0,4));
 		map.put("month2", endDate.substring(5,7));
@@ -428,9 +451,9 @@ public class CaseInfoCityServiceImpl implements CaseInfoCityService {
 		map.put("day3", currentDate.substring(8,10));
 		
 		String uuid = jo.getString("id");
-		String url = FileController.absolute + uuid+".doc";
+		String url = FileController.fileAbsolute + uuid+".doc";
 		
-		String dir = FileController.absolute;
+		String dir = FileController.fileAbsolute;
 		String filename = "word.ftl";
 		String result = WordUtil.createWord(url,map,dir,filename);	
 		return result.equals("") ? ("/file/" + uuid+".doc") : result;
