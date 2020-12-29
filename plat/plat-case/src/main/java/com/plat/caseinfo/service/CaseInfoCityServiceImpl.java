@@ -36,6 +36,7 @@ import com.plat.common.utils.StringUtil;
 import com.plat.common.utils.TimeUtil;
 import com.plat.common.utils.WordUtil;
 import com.plat.common.web.FileController;
+import com.plat.sysconfig.dao.QuestionTypeRepository;
 import com.plat.sysconfig.dao.SysGlobalConfigRepository;
 import com.plat.sysconfig.entity.SysGlobalConfig;
 import com.plat.sysconfig.util.IntervalTimeUtil;
@@ -62,6 +63,9 @@ public class CaseInfoCityServiceImpl implements CaseInfoCityService {
 
 	@Autowired
 	SysGlobalConfigRepository sysGlobalConfigRepository;
+	
+	@Autowired
+	QuestionTypeRepository questionTypeRepository;
 	
 	public Integer getCalculateType() {
 		int type = 1;
@@ -184,7 +188,7 @@ public class CaseInfoCityServiceImpl implements CaseInfoCityService {
 		Integer pageSize = page.getPageSize();
 		// TODO Auto-generated method stub
 		
-		String countSql = " SELECT t1.*,t2.companyName,t3.gridName,t4.name reportorName,t5.name managerName, " + 
+		String countSql = " SELECT t1.*,t6.typeName,t2.companyName,t3.gridName,t4.name reportorName,t5.name managerName, " + 
 				" case when timestampdiff(SECOND,NOW(),enddate)/timestampdiff(SECOND,reportTime,enddate) >= (1/3) then '0' " + 
 				" when timestampdiff(SECOND,NOW(),enddate)/timestampdiff(SECOND,reportTime,enddate) >= 0 then '1' " + 
 				" when timestampdiff(SECOND,NOW(),enddate)/timestampdiff(SECOND,reportTime,enddate) < 0 then '2' " + 
@@ -194,6 +198,7 @@ public class CaseInfoCityServiceImpl implements CaseInfoCityService {
 				"LEFT JOIN gridcommunity t3 on t2.grid=t3.id " + 
 				"LEFT JOIN user t4 on t1.reportor=t4.id "+
 				"LEFT JOIN user t5 on t1.manager=t5.id "+
+				" LEFT JOIN questiontype t6 on t1.questiontype=t6.id " + 
 				" where 1=1 ";
 		if (!StringUtils.isEmpty(caseInfoCity.getId())) {
 			countSql += " and t1.id='"+caseInfoCity.getId()+"'";
@@ -408,6 +413,13 @@ public class CaseInfoCityServiceImpl implements CaseInfoCityService {
 		String reportTime = jo.getString("reportTime");
 		map.put("year", reportTime.substring(0,4));
 		map.put("month", reportTime.substring(5,7));
+		
+		String questionType = StringUtil.null2String(jo.getString("questionType"));
+		String typeName = "";
+		if (!"".equals(questionType)) {
+			typeName = questionTypeRepository.getOne(questionType).getTypeName();
+		}
+		map.put("typeName",typeName);
 		map.put("companyName", StringUtil.null2String(jo.getString("companyName")));
 		map.put("locationDesc", StringUtil.null2String(jo.getString("locationDesc")));
 		map.put("manager", StringUtil.null2String(jo.getString("manager")));
