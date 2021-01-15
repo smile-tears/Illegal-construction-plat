@@ -37,8 +37,8 @@ public class MessageController {
 	 * 查询
 	 */
 	@PostMapping("/find")
-	public Object find(Message message, Page page) {
-		return messageService.find(message,page);
+	public Object find(Message message, Page page,String startDate,String endDate) {
+		return messageService.find(message,page,startDate,endDate);
 	}
  
 }

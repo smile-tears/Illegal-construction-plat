@@ -6,6 +6,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
+import org.hibernate.query.internal.NativeQueryImpl;
+import org.hibernate.transform.Transformers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
@@ -13,6 +18,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -28,6 +34,9 @@ public class MessageReceiveServiceImpl implements MessageReceiveService {
 
 	@Autowired
 	MessageReceiveRepository messageReceiveRepository;
+	
+	@PersistenceContext 
+    EntityManager entityManager;
 
 	@Override
 	public Object save(MessageReceive messageReceive) {
@@ -47,38 +56,34 @@ public class MessageReceiveServiceImpl implements MessageReceiveService {
 	@Override
 	public Object find(MessageReceive messageReceive, Page page) {
 		// TODO Auto-generated method stub
-		// 查询条件设置默认值
-		messageReceive.setDelTag(1);
-		// 创建匹配器，需要查询条件请修改此处代码
-		ExampleMatcher matcher = ExampleMatcher.matchingAll().withMatcher("messageReceiveName",
-				ExampleMatcher.GenericPropertyMatchers.contains());
-		// 创建实例
-		Example<MessageReceive> example = Example.of(messageReceive, matcher);
-		Long total = messageReceiveRepository.count(example);
-		// 分页构造
-		Pageable pageable = null;
-		Integer totalPage = null;
-		Object list = new ArrayList<>();
-		if (page.getPageNo() != null && page.getPageSize() != null) {
-			List<Sort.Order> orders = new ArrayList<>();
-			orders.add(new Sort.Order(Sort.Direction.ASC, "showOrder"));
-			Sort sort = Sort.by(orders);
-			pageable = PageRequest.of(page.getPageNo() - 1, page.getPageSize(), sort); // pageIndex默认从0开始
-			list = messageReceiveRepository.findAll(example, pageable).getContent();
-			totalPage = (int) (total % page.getPageSize() == 0 ? total / page.getPageSize()
-					: total / page.getPageSize() + 1);
-		} else {
-			list = messageReceiveRepository.findAll(example);
+		Integer pageNo = page.getPageNo();
+		Integer pageSize = page.getPageSize();
+		String countSql = " SELECT t1.*,t2.content,t2.sendTime from messagereceive t1 "
+				+" JOIN message t2 on t1.messageid=t2.id where 1=1   ";
+		if (!StringUtils.isEmpty(messageReceive.getUser().getId())) {
+			countSql += " and t1.userid='"+messageReceive.getUser().getId()+"'";
 		}
+		if (!StringUtils.isEmpty(messageReceive.getStatus())) {
+			countSql += " and t1.status='"+messageReceive.getStatus()+"'";
+		}
+		countSql += " order by t2.sendTime desc";
+		String dataSql = countSql;
+		if (!StringUtils.isEmpty(pageNo) && !StringUtils.isEmpty(pageSize)) {
+			Integer start = (pageNo - 1 ) * pageSize;
+			Integer offset = pageSize;
+			dataSql += " limit " + start + "," + offset;
+		}
+		// System.out.println("=========="+dataSql);
+		int total = entityManager.createNativeQuery(countSql).getResultList().size();
+
+		List<Map<String, Object>> data = entityManager.createNativeQuery(dataSql)
+				.unwrap(NativeQueryImpl.class).setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP).getResultList();
 		Map<String, Object> result = new HashMap<>();
-		result.put("data", list);
+		result.put("data", data);
 		result.put("pageNo", page.getPageNo());
-		result.put("pageSize", page.getPageSize());
 		result.put("totalCount", total);
-		if (page.getPageNo() == null || page.getPageSize() == null) {
-			result.put("totalPage", 1);
-		} else {
-			result.put("totalPage", totalPage);
+		if (page.getPageNo() != null && page.getPageSize() !=null ) {
+			result.put("totalPage", total % page.getPageSize() == 0 ? total / page.getPageSize() : total / page.getPageSize() + 1);
 		}
 		return new BaseResponse<>(200, "success", result);
 	}

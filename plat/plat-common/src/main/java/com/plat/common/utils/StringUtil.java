@@ -19,6 +19,10 @@ public class StringUtil {
         return str == null ? "" : str;
     }
 	
+	public static String getUUID() {
+        return UUID.randomUUID().toString().replaceAll("-","");
+    }
+	
     /**
      * 默认随机数范围
      */

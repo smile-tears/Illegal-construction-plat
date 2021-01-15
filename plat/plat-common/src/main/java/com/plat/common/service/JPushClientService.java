@@ -1,4 +1,4 @@
-package com.plat.main.service;
+package com.plat.common.service;
 
 import cn.jiguang.common.ClientConfig;
 import cn.jiguang.common.ServiceHelper;
@@ -21,8 +21,8 @@ import cn.jsms.api.common.model.BatchSMSResult;
 import cn.jsms.api.common.model.RecipientPayload;
 import cn.jsms.api.common.model.SMSPayload;
 import com.alibaba.fastjson.JSONObject;
-import com.plat.main.config.JPushConfig;
-import com.plat.main.config.JPushConstants;
+import com.plat.common.config.JPushConfig;
+import com.plat.common.config.JPushConstants;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

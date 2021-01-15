@@ -10,6 +10,6 @@ public interface MessageService {
 
 	
  
-	public Object find(Message message, Page page);
+	public Object find(Message message, Page page,String startDate,String endDate);
  
 }

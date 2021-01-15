@@ -1,4 +1,4 @@
-package com.plat.main.web;
+package com.plat.common.web;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,10 +9,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.plat.common.config.JPushConstants;
 import com.plat.common.dao.UserRepository;
 import com.plat.common.entity.BaseResponse;
-import com.plat.main.config.JPushConstants;
-import com.plat.main.service.JPushClientService;
+import com.plat.common.service.JPushClientService;
+ 
 
 @RestController
 public class JPushController {

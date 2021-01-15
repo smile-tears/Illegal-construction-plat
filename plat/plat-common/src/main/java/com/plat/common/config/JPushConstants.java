@@ -1,4 +1,4 @@
-package com.plat.main.config;
+package com.plat.common.config;
 
 /**
  *  JPush常量

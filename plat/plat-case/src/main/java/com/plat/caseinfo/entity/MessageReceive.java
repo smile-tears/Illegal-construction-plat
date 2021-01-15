@@ -2,11 +2,23 @@ package com.plat.caseinfo.entity;
 
 import lombok.Data;
 import java.io.Serializable;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedAttributeNode;
+import javax.persistence.NamedEntityGraph;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import org.hibernate.annotations.GenericGenerator;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.plat.common.entity.User;
+
 import javax.persistence.GeneratedValue;
 import java.util.Date;
 /**
@@ -30,23 +42,16 @@ public class MessageReceive implements Serializable {
     @Column(name="id" ,length = 32 )
     private String id;
 
-    /**
-    * 消息id
-    */
-    @Column(name="messageId"  )
-    private String messageId;
-
-    /**
-    * 接收人id
-    */
-    @Column(name="userid"  )
-    private String userid;
-
-    /**
-    * 姓名
-    */
-    @Column(name="username"  )
-    private String username;
+//    /**
+//    * 接收人id
+//    */
+//    @Column(name="userid"  )
+//    private String userid;
+    
+    
+    @OneToOne
+    @JoinColumn(name = "userid" ,referencedColumnName="id")
+    private User user;
 
     
     /**
@@ -54,6 +59,11 @@ public class MessageReceive implements Serializable {
      */
     @Column(name="status"  )
     private Integer status;
+    
+    @JsonIgnoreProperties(value = "messageReceiveList")
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "messageId")
+    private Message message;
 	/**
 	 * 删除标记
 	 */

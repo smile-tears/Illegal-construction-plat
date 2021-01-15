@@ -1,4 +1,4 @@
-package com.plat.main.config;
+package com.plat.common.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
