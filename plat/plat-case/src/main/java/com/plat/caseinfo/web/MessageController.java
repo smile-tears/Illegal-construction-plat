@@ -4,6 +4,9 @@ import com.plat.caseinfo.entity.Message;
 import com.plat.caseinfo.service.MessageService;
 
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -37,8 +40,8 @@ public class MessageController {
 	 * 查询
 	 */
 	@PostMapping("/find")
-	public Object find(Message message, Page page,String startDate,String endDate) {
-		return messageService.find(message,page,startDate,endDate);
+	public Object find(Message message, Page page,String startDate,String endDate, HttpServletRequest request) {
+		return messageService.find(message,page,startDate,endDate,request);
 	}
  
 }

@@ -23,12 +23,9 @@ public interface MessageRepository extends JpaRepository<Message, String>, JpaSp
 	@Query(value = "update Message set delTag=0 where id in ?1 ", nativeQuery = true)
 	public void deleteByIds(String[] ids);
 
-	@Query(value = "select t2.registrationID from messageReceive t1, user t2 where t1.userid=t2.id "
-			+" and t2.registrationID is not null "
-			+" and t1.messageId = ?1 ", nativeQuery = true)
-	public List<String> audienceValues(String messageId);
-	
 	@Override
 	@EntityGraph("Message.MessageReceive")
 	Page<Message> findAll(Specification<Message> spec, Pageable pageable) ;
+	
+	
 }

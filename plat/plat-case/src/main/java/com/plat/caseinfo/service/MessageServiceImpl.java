@@ -1,5 +1,6 @@
 package com.plat.caseinfo.service;
 
+import java.io.UnsupportedEncodingException;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -14,6 +15,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.servlet.http.HttpServletRequest;
 
 import org.hibernate.query.internal.NativeQueryImpl;
 import org.hibernate.transform.Transformers;
@@ -35,8 +37,11 @@ import com.alibaba.fastjson.JSONObject;
 import com.plat.common.config.JPushConstants;
 import com.plat.common.entity.BaseResponse;
 import com.plat.common.entity.Page;
+import com.plat.common.entity.User;
 import com.plat.common.service.JPushClientService;
+import com.plat.common.service.UserService;
 import com.plat.common.utils.BeanProcessUtils;
+import com.plat.common.utils.SmsUtil;
 import com.plat.common.utils.StringUtil;
 import com.plat.common.utils.TimeUtil;
 import com.plat.caseinfo.dao.MessageReceiveRepository;
@@ -58,6 +63,9 @@ public class MessageServiceImpl implements MessageService {
 	
 	@Autowired
 	JPushClientService jPushClientService;
+	
+	@Autowired
+	UserService userService;
 	
 //	@PersistenceContext 
 //    EntityManager entityManager;
@@ -89,12 +97,29 @@ public class MessageServiceImpl implements MessageService {
         });
         
         // 发送手机通知
-        List<String > audienceValues = messageRepository.audienceValues(result.getId());
+        List<String > audienceValues = messageReceiveRepository.audienceValues(result.getId());
         if (audienceValues.size() > 0) {
         	jPushClientService.sendPush(JPushConstants.PLATFORM_ANDROID, JPushConstants.AUDIENCE_REGISTRATION_ID, 
     				audienceValues, result.getTitle(), "通知", result.getId());
         }
-		
+		// 发送手机短信
+        if (message.getSendSms() != null && message.getSendSms() == 0) {
+        	List<String> mobileList = messageReceiveRepository.getMobiles(result.getId());
+        	String mobiles = org.apache.commons.lang3.StringUtils.join(mobileList, ",");
+        	if (!"".equals(mobiles)) {
+        		//mobiles += ",";
+        		try {
+    				String smsResponse = SmsUtil.sendSms(result.getId(), mobiles, "【堰桥安监局】"+message.getTitle());
+    				JSONObject smsJo = JSONObject.parseObject(smsResponse);
+    				System.out.println("===========短信发送返回结果："+smsJo.toJSONString());
+    			} catch (UnsupportedEncodingException e) {
+    				// TODO Auto-generated catch block
+    				e.printStackTrace();
+    			}
+        	}
+        	
+        }
+        
 		return new BaseResponse<>(200, "success");
 	}
 
@@ -107,8 +132,9 @@ public class MessageServiceImpl implements MessageService {
 
  
 	@Override
-	public Object find(Message message, Page page,String startDate,String endDate) {
-		// TODO Auto-generated method stub
+	public Object find(Message message, Page page,String startDate,String endDate,HttpServletRequest request) {
+//		User user = userService.getUserByToken(request);
+//		user.getGrids();
 		// 排序
 		List<Sort.Order> orders = new ArrayList<>();
 		orders.add(new Sort.Order(Sort.Direction.DESC,"sendTime")); 
@@ -125,6 +151,7 @@ public class MessageServiceImpl implements MessageService {
 			public Predicate toPredicate(Root<Message> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
 				// TODO Auto-generated method stub
 				Predicate predicate = cb.conjunction();
+				predicate.getExpressions().add(cb.ge(root.get("delTag").as(Integer.class), 1));
 				if (!StringUtils.isEmpty(message.getTitle())) {
 					predicate.getExpressions().add(cb.like(root.get("title").as(String.class), "%"+message.getTitle()+"%"));
 				}

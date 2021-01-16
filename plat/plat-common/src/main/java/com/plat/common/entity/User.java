@@ -219,6 +219,8 @@ public class User implements Serializable {
 	 */
 	@Column(name = "delTag", insertable = false, columnDefinition = "int default 1")
 	private Integer delTag;
+	
+	private String grids;
 
 //	@ManyToOne
 //	@JoinColumn(name = "departmentId")
