@@ -33,8 +33,8 @@ public class MessageReceiveController {
     }
  
     @PostMapping("/read")
-    public Object read(String id) {
-    	return messageReceiveService.read(id);
+    public Object read(String messageId,String userid) {
+    	return messageReceiveService.read(messageId, userid);
     }
 	
     /**

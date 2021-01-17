@@ -28,6 +28,7 @@ import com.plat.common.entity.Page;
 import com.plat.common.utils.BeanProcessUtils;
 import com.plat.caseinfo.dao.MessageReceiveRepository;
 import com.plat.caseinfo.entity.MessageReceive;
+import com.plat.caseinfo.entity.UserPosition;
 
 @Service
 public class MessageReceiveServiceImpl implements MessageReceiveService {
@@ -89,10 +90,29 @@ public class MessageReceiveServiceImpl implements MessageReceiveService {
 	}
 
 	@Override
-	public Object read(String id) {
+	public Object read(String messageId,String userid) {
 		// TODO Auto-generated method stub
-		messageReceiveRepository.read(id);
-		return new BaseResponse<>(200, "更新阅读状态成功");
+		Integer count = messageReceiveRepository.read(messageId,userid);
+		if (count > 0) {
+			MessageReceive messageReceive = messageReceiveRepository.getByMessageIdAndUserid(messageId, userid);
+			return new BaseResponse<>(200, "更新阅读状态成功",messageReceive);
+		} else {
+			return new BaseResponse<>(500, "更新阅读状态失败");
+		}
+		
 	}
+
+//	@Override
+//	public Object Update(MessageReceive target) {
+//		// TODO Auto-generated method stub
+//		Optional<MessageReceive> source = messageReceiveRepository.findById(target.getId());
+//		if (source.isPresent()) {
+//			MessageReceive messageReceive = (MessageReceive) BeanProcessUtils.copy(source.get(), target);
+//			MessageReceive result = messageReceiveRepository.save(messageReceive);
+//			return new BaseResponse<>(200, "success", result);
+//		} else {
+//			return new BaseResponse<>(500, "id：" + target.getId() + "对应的数据未查到或已删除！");
+//		}
+//	}
 
 }

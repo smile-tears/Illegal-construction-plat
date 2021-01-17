@@ -8,8 +8,9 @@ public interface MessageReceiveService {
 
 	public Object deleteByIds(String[] ids);
 
-	public Object read(String id);
+	public Object read(String messageId,String userid);
 	
 	public Object find(MessageReceive messageReceive, Page page);
+	
 
 }

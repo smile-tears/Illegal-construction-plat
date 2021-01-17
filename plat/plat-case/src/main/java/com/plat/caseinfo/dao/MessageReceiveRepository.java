@@ -21,8 +21,11 @@ public interface MessageReceiveRepository extends JpaRepository<MessageReceive,S
 	
 	@Transactional
     @Modifying
-	@Query(value = "update MessageReceive set status=0 where id = ?1 ",nativeQuery = true )
-	public void read(String id);
+	@Query(value = "update MessageReceive set status=0 where messageId = ?1 and userid = ?2 ",nativeQuery = true )
+	public Integer read(String messageId,String userid);
+	
+	@Query(value = "select * from MessageReceive where messageId = ?1 and userid = ?2 ",nativeQuery = true )
+	public MessageReceive getByMessageIdAndUserid(String messageId,String userid);
 	
 	@Query(value = "select t2.registrationID from messageReceive t1, user t2 where t1.userid=t2.id "
 			+" and t2.registrationID is not null "
