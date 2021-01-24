@@ -41,6 +41,7 @@ import com.plat.sysconfig.dao.SysGlobalConfigRepository;
 import com.plat.sysconfig.entity.SysGlobalConfig;
 import com.plat.sysconfig.util.IntervalTimeUtil;
 import com.plat.caseinfo.entity.CaseInfoCity;
+import com.plat.caseinfo.entity.CaseQuestion;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -81,6 +82,10 @@ public class CaseInfoCityServiceImpl implements CaseInfoCityService {
 		// TODO Auto-generated method stub
 		if (StringUtils.isEmpty(caseInfoCity.getLng()) ||StringUtils.isEmpty(caseInfoCity.getLat()) ) {
 			return new BaseResponse<>(500, "经纬度坐标不全！");
+		}
+		List<CaseQuestion> caseQuestions = caseInfoCity.getCaseQuestions();
+		for (CaseQuestion caseQuestion : caseQuestions) {
+			caseQuestion.setCaseInfoCity(caseInfoCity);
 		}
 		try {
 			if (caseInfoCity.getStatus() == 1) {
@@ -198,7 +203,8 @@ public class CaseInfoCityServiceImpl implements CaseInfoCityService {
 				"LEFT JOIN gridcommunity t3 on t2.grid=t3.id " + 
 				"LEFT JOIN user t4 on t1.reportor=t4.id "+
 				"LEFT JOIN user t5 on t1.manager=t5.id "+
-				" LEFT JOIN questiontype t6 on t1.questiontype=t6.id " + 
+				" LEFT JOIN (SELECT caseInfoCityId,GROUP_CONCAT(typeName) as typeName from casequestion t1 " + 
+				" LEFT JOIN questiontype t2 on t1.questiontype=t2.id GROUP BY caseInfoCityId,typeName ) t6 on t1.id=t6.caseInfoCityId " + 
 				" where 1=1 ";
 		if (!StringUtils.isEmpty(caseInfoCity.getId())) {
 			countSql += " and t1.id='"+caseInfoCity.getId()+"'";
@@ -328,8 +334,9 @@ public class CaseInfoCityServiceImpl implements CaseInfoCityService {
 				map.put("rowSpan", index+"");
 			}
 		}
-		String sql2 = "SELECT t1.questiontype,t2.typeName,ifnull(t2.typeName,'其它') item,count(1) count from caseinfo_city t1 " + 
-				" LEFT JOIN questiontype t2 on t1.questiontype=t2.id " + 
+		String sql2 = "SELECT t4.questiontype,t2.typeName,t2.typeName as item,count(1) count from caseinfo_city t1 " + 
+				" left join casequestion t4 on t4.caseInfoCityId = t1.id" +
+				" LEFT JOIN questiontype t2 on t4.questiontype=t2.id " + 
 				" left JOIN gridcommunity t3 on instr(t3.patrolManager,t1.reportor) > 0   " + 
 				" where t1.status<>0  ";
 		if (!StringUtils.isEmpty(startDate)) {
@@ -344,7 +351,7 @@ public class CaseInfoCityServiceImpl implements CaseInfoCityService {
 		if (!StringUtils.isEmpty(manager)) {
 			sql2 += " and t1.reportor='"+manager+"'";
 		}
-		sql2 += " GROUP BY t1.questiontype,t2.typeName,t2.showorder order by t2.showorder";
+		sql2 += " GROUP BY t4.questiontype,t2.typeName,t2.showorder order by t2.showorder";
 		List<Map<String, String>> data2 = entityManager.createNativeQuery(sql2).unwrap(NativeQueryImpl.class)
 				.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP).getResultList();
 		
@@ -362,7 +369,8 @@ public class CaseInfoCityServiceImpl implements CaseInfoCityService {
 			Map<String, String> area = areaList.get(i);
 			sql3 += "  ,( select count(1) from caseinfo_city t "
 					+" JOIN gridcommunity t3 on instr(t3.patrolManager,t.reportor) > 0 "
-					+" where t3.id='"+area.get("id")+"' and t.questiontype=t1.id ";
+					+" left join casequestion t4 on t4.caseInfoCityId=t.id  "
+					+" where t3.id='"+area.get("id")+"' and t4.questiontype=t1.id ";
 			if (!StringUtils.isEmpty(startDate)) {
 				sql3 += " and substr(t.reportTime,1,10)>='"+startDate+"'";
 			}
@@ -378,8 +386,10 @@ public class CaseInfoCityServiceImpl implements CaseInfoCityService {
 			sql3 += " ) as "+area.get("gridName");
 		}
 		sql3 += " from questiontype t1 GROUP BY t1.typeName,t1.showOrder order by t1.showOrder";
+		//System.out.println("==========="+sql3);
 		List<Map<String, String>> data3 = entityManager.createNativeQuery(sql3).unwrap(NativeQueryImpl.class)
 				.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP).getResultList();
+		
 		for (int i=0; i<data2.size(); i++) {
 			Map<String, String> map = data2.get(i);
 			map.remove("typeName");
@@ -414,12 +424,12 @@ public class CaseInfoCityServiceImpl implements CaseInfoCityService {
 		map.put("year", reportTime.substring(0,4));
 		map.put("month", reportTime.substring(5,7));
 		
-		String questionType = StringUtil.null2String(jo.getString("questionType"));
-		String typeName = "";
-		if (!"".equals(questionType)) {
-			typeName = questionTypeRepository.getOne(questionType).getTypeName();
-		}
-		map.put("typeName",typeName);
+//		String questionType = StringUtil.null2String(jo.getString("questionType"));
+//		String typeName = "";
+//		if (!"".equals(questionType)) {
+//			typeName = questionTypeRepository.getOne(questionType).getTypeName();
+//		}
+		map.put("typeName",StringUtil.null2String(jo.getString("typeName")));
 		map.put("companyName", StringUtil.null2String(jo.getString("companyName")));
 		map.put("locationDesc", StringUtil.null2String(jo.getString("locationDesc")));
 		map.put("manager", StringUtil.null2String(jo.getString("manager")));

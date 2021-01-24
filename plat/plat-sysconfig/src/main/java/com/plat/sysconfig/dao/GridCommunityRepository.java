@@ -45,5 +45,8 @@ public interface GridCommunityRepository extends JpaRepository<GridCommunity,Str
 
 	@Query(value = "select telephone from user where id= ?1",nativeQuery = true)
 	public String getTelephone(String id);
+	
+	@Query(value = "select * from GridCommunity where gridName= ?1",nativeQuery = true)
+	public GridCommunity getGridByGridName (String gridName);
 
 }

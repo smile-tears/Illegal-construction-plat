@@ -84,7 +84,7 @@ public class ShiroConfig {
 		filterChainDefinitionMap.put("/websocket/**", "anon");
 		filterChainDefinitionMap.put("/testws/**", "anon");
 		filterChainDefinitionMap.put("/upload-avatar", "anon");// 测试
-		filterChainDefinitionMap.put("/upload", "anon");
+		filterChainDefinitionMap.put("/upload/**", "anon");
 		filterChainDefinitionMap.put("/avatar/**", "anon");
 		filterChainDefinitionMap.put("/file/**", "anon");
 		filterChainDefinitionMap.put("/hello", "anon");// 测试

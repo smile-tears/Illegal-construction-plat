@@ -59,7 +59,8 @@ public class MessageReceiveServiceImpl implements MessageReceiveService {
 		// TODO Auto-generated method stub
 		Integer pageNo = page.getPageNo();
 		Integer pageSize = page.getPageSize();
-		String countSql = " SELECT t1.*,t2.content,t2.sendTime,t2.title from messagereceive t1 "
+		String countSql = " SELECT t1.*,t2.content,t2.sendTime,t2.title,t2.remark,t2.fileName,t2.filePath "
+				+" from messagereceive t1 "
 				+" JOIN message t2 on t1.messageid=t2.id where 1=1   ";
 		if (!StringUtils.isEmpty(messageReceive.getUser().getId())) {
 			countSql += " and t1.userid='"+messageReceive.getUser().getId()+"'";

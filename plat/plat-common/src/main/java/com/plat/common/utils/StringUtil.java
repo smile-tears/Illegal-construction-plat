@@ -1,6 +1,7 @@
 
 package com.plat.common.utils;
 
+import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Field;
@@ -17,6 +18,10 @@ public class StringUtil {
 
 	public static String null2String(String str) {
         return str == null ? "" : str;
+    }
+	
+	public static String null2String(HSSFCell cell) {
+        return cell == null ? "" : cell.getStringCellValue();
     }
 	
 	public static String getUUID() {

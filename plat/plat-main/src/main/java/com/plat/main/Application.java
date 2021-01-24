@@ -13,6 +13,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.plat.caseinfo.web.WebSocketServerConfig;
 
@@ -24,6 +25,7 @@ import com.plat.caseinfo.web.WebSocketServerConfig;
 //扫描jpa Repository注解，
 @EntityScan(basePackages = { "com.plat.common.entity", "com.plat.sysconfig.entity", "com.plat.caseinfo.entity" })
 @EnableJpaRepositories(basePackages = { "com.plat.common.dao", "com.plat.sysconfig.dao", "com.plat.caseinfo.dao" })
+@EnableTransactionManagement
 public class Application {
 	public static void main(String[] args) {
 		ConfigurableApplicationContext context = SpringApplication.run(Application.class, args);

@@ -17,4 +17,6 @@ public interface CompanyManageRepository extends JpaRepository<CompanyManage,Str
 	@Query(value = "update CompanyManage set delTag=0 where id in ?1 ",nativeQuery = true )
 	public void deleteByIds(String[] ids);
 
+	@Query(value = "select id from CompanyManage where companyName = ?1 ",nativeQuery = true )
+	public String getCompanyIdByName(String companyName);
 }

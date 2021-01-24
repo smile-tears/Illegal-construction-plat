@@ -103,22 +103,20 @@ public class MessageServiceImpl implements MessageService {
     				audienceValues, result.getTitle(), "通知", result.getId());
         }
 		// 发送手机短信
-        if (message.getSendSms() != null && message.getSendSms() == 0) {
-        	List<String> mobileList = messageReceiveRepository.getMobiles(result.getId());
-        	String mobiles = org.apache.commons.lang3.StringUtils.join(mobileList, ",");
-        	if (!"".equals(mobiles)) {
-        		//mobiles += ",";
-        		try {
-    				String smsResponse = SmsUtil.sendSms(result.getId(), mobiles, "【堰桥安监局】"+message.getTitle());
-    				JSONObject smsJo = JSONObject.parseObject(smsResponse);
-    				System.out.println("===========短信发送返回结果："+smsJo.toJSONString());
-    			} catch (UnsupportedEncodingException e) {
-    				// TODO Auto-generated catch block
-    				e.printStackTrace();
-    			}
-        	}
-        	
-        }
+        List<String> mobileList = messageReceiveRepository.getMobiles(result.getId());
+    	String mobiles = org.apache.commons.lang3.StringUtils.join(mobileList, ",");
+    	if (!"".equals(mobiles)) {
+    		try {
+				String smsResponse = SmsUtil.sendSms(result.getId(), mobiles, "【堰桥安监局】"+message.getTitle());
+				JSONObject smsJo = JSONObject.parseObject(smsResponse);
+				System.out.println("===========短信发送返回结果："+smsJo.toJSONString());
+			} catch (UnsupportedEncodingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    	}
+//        if (message.getSendSms() != null && message.getSendSms() == 0) {
+//        }
         
 		return new BaseResponse<>(200, "success");
 	}

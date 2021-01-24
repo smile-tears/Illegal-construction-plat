@@ -2,21 +2,30 @@ package com.plat.caseinfo.entity;
 
 import lombok.Data;
 import java.io.Serializable;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
 import org.hibernate.annotations.GenericGenerator;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.GeneratedValue;
 /**
  * @description 案件信息表
  * @author admin
  * @date 2020-06-13 14:59:25
+ */
+/**
+ * @author 19093
+ *
  */
 @Entity
 @Data
@@ -125,10 +134,23 @@ public class CaseInfoCity implements Serializable {
 	 */
 	private String endTime;
 	
+//	/**
+//	 * 违建类型
+//	 */
+//	private String questionType;
+	
 	/**
-	 * 违建类型
+	 * 其它违建类型
 	 */
-	private String questionType;
+	private String otherQuestionType;
+	
+	
+	/**
+	 * 案件违建类型
+	 */
+	@OneToMany(mappedBy = "caseInfoCity", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@JsonIgnoreProperties(value = "caseInfoCity")
+	private List<CaseQuestion> caseQuestions;
 	
 //	/**
 //	 * 关联网格

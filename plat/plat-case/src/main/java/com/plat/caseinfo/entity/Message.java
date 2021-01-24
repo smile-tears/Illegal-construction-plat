@@ -73,6 +73,22 @@ public class Message implements Serializable {
 	@Column(name = "content", columnDefinition = "longtext")
 	private String content;
 
+	
+	@Column(length = 4000)
+	private String remark;
+	
+	/**
+     * 附件名称
+     */
+    @Column(length = 1000  )
+    private String fileName;
+    
+    /**
+     * 附件路径
+     */
+    @Column(length = 1000  )
+    private String filePath;
+    
 	/**
 	 * 是否推送短信 0：推送；1不推送；
 	 */

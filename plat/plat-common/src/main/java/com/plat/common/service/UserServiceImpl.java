@@ -68,10 +68,13 @@ public class UserServiceImpl implements UserService {
 		// TODO Auto-generated method stub
 		Optional<User> source = userRepository.findById(target.getId());
 		if (source.isPresent()) {
+			boolean pwdIsNull = target.getPassword() == null;
 			User user = (User) BeanProcessUtils.copy(source.get(), target);
-			SimpleHash sh = new SimpleHash(EncryptionUtils.algorithmName, user.getPassword(), EncryptionUtils.salt,
-					EncryptionUtils.hashIterations);
-			user.setPassword(sh.toHex());
+			if (!pwdIsNull) {
+				SimpleHash sh = new SimpleHash(EncryptionUtils.algorithmName, user.getPassword(), EncryptionUtils.salt,
+						EncryptionUtils.hashIterations);
+				user.setPassword(sh.toHex());
+			}
 			if (user.getSubCompanyId() == null) {
 				String subCompanyId = departmentRepository.getOne(user.getDepartmentId()).getSubCompanyId();
 				user.setSubCompanyId(subCompanyId);

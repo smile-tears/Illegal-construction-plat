@@ -23,6 +23,9 @@ public interface DepartmentRepository extends JpaRepository<Department,String> {
 	public List<Department> getSubDepartmentById(String id);
 	@Query(value = "select * from Department where delTag=1 and supDeptId=?1 and subCompanyId=?2 order by showorder",nativeQuery = true )
 	public List<Department> getSubDepartmentById(String id,String subCompanyId);
+	
+	@Query(value = "select * from Department where departmentName = ?1 and delTag=1 ",nativeQuery = true )
+	public Department getDepartmentByName(String name);
 
 
 }
