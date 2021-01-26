@@ -193,7 +193,7 @@ public class CaseInfoCityServiceImpl implements CaseInfoCityService {
 		Integer pageSize = page.getPageSize();
 		// TODO Auto-generated method stub
 		
-		String countSql = " SELECT t1.*,t6.typeName,t2.companyName,t3.gridName,t4.name reportorName,t5.name managerName, " + 
+		String countSql = " SELECT t1.*,t6.typeName,t6.typeName2,t2.companyName,t3.gridName,t4.name reportorName,t5.name managerName, " + 
 				" case when timestampdiff(SECOND,NOW(),enddate)/timestampdiff(SECOND,reportTime,enddate) >= (1/3) then '0' " + 
 				" when timestampdiff(SECOND,NOW(),enddate)/timestampdiff(SECOND,reportTime,enddate) >= 0 then '1' " + 
 				" when timestampdiff(SECOND,NOW(),enddate)/timestampdiff(SECOND,reportTime,enddate) < 0 then '2' " + 
@@ -203,8 +203,12 @@ public class CaseInfoCityServiceImpl implements CaseInfoCityService {
 				"LEFT JOIN gridcommunity t3 on t2.grid=t3.id " + 
 				"LEFT JOIN user t4 on t1.reportor=t4.id "+
 				"LEFT JOIN user t5 on t1.manager=t5.id "+
-				" LEFT JOIN (SELECT caseInfoCityId,GROUP_CONCAT(typeName) as typeName from casequestion t1 " + 
-				" LEFT JOIN questiontype t2 on t1.questiontype=t2.id GROUP BY caseInfoCityId,typeName ) t6 on t1.id=t6.caseInfoCityId " + 
+				" LEFT JOIN (SELECT caseInfoCityId,GROUP_CONCAT(t2.typeName) as typeName," +
+				" GROUP_CONCAT(distinct t3.typeName) as typeName2 "+
+				" from casequestion t1 " + 
+				" LEFT JOIN questiontype t2 on t1.questiontype=t2.id "+
+				" LEFT JOIN questiontype t3 on t1.fstLvlType=t3.id "+
+				" GROUP BY caseInfoCityId ) t6 on t1.id=t6.caseInfoCityId " + 
 				" where 1=1 ";
 		if (!StringUtils.isEmpty(caseInfoCity.getId())) {
 			countSql += " and t1.id='"+caseInfoCity.getId()+"'";

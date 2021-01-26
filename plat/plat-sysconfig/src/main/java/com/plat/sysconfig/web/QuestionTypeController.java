@@ -47,4 +47,14 @@ public class QuestionTypeController {
 	public Object find(QuestionType questionType, Page page) {
 		return questionTypeService.find(questionType,page);
 	}
+	
+	@PostMapping("/fstLvl")
+	public Object getFstLvlType() {
+		return questionTypeService.getFstLvlType();
+	}
+	
+	@PostMapping("/secLvl")
+	public Object getSecLvlType(@RequestBody String[] ids) {
+		return questionTypeService.getSecLvlType(ids);
+	}
 }

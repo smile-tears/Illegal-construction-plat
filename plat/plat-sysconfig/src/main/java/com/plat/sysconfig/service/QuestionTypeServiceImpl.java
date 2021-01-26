@@ -94,4 +94,16 @@ public class QuestionTypeServiceImpl implements QuestionTypeService {
 		}
 		return new BaseResponse<>(200, "success", result);
 	}
+
+	@Override
+	public Object getFstLvlType() {
+		// TODO Auto-generated method stub
+		return new BaseResponse<>(200, "success", questionTypeRepository.getFstLvlType());
+	}
+
+	@Override
+	public Object getSecLvlType(String[] fstLvlIds) {
+		// TODO Auto-generated method stub
+		return new BaseResponse<>(200, "success", questionTypeRepository.getSecLvlType(fstLvlIds));
+	}
 }

@@ -5,8 +5,13 @@ import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import org.hibernate.annotations.GenericGenerator;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import javax.persistence.GeneratedValue;
 import java.util.Date;
 /**
@@ -35,6 +40,16 @@ public class QuestionType implements Serializable {
     */
     @Column(name="typeName"  )
     private String typeName;
+    
+    /**
+     * 所属一级
+     */
+    
+    @OneToOne
+    @JoinColumn(name = "fstLvlId")
+    @JsonIgnoreProperties(value = "fstLvlType")
+    private QuestionType fstLvlType;
+    
 
     /**
     * 显示顺序

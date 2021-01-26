@@ -39,6 +39,11 @@ public class CaseQuestion implements Serializable{
 	
 	private String questionType;
 	
+	/**
+	 * 所属一级类型
+	 */
+	private String fstLvlType;
+	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "caseInfoCityId")
 	@JsonIgnoreProperties(value = "caseQuestions")
