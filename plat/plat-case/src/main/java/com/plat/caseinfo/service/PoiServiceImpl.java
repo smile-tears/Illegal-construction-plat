@@ -151,13 +151,14 @@ public class PoiServiceImpl implements PoiService {
 			user.setTelephone(StringUtil.null2String(row.getCell(6)));
 			
 			String status = StringUtil.null2String(row.getCell(7)) ;
-			user.setStatus(status.equals("正式") ? 0 : 1);
+			user.setStatus(status.equals("正式") ? 1 : 0);
 			
 			user.setWorkcode(StringUtil.null2String(row.getCell(8)));
 			
 			String showOrder = StringUtil.null2String(row.getCell(9));
 			if(!showOrder.equals("")) user.setShowOrder(Integer.parseInt(showOrder));
 			
+			user.setDelTag(1);
 			userRepository.save(user);
 			
 			

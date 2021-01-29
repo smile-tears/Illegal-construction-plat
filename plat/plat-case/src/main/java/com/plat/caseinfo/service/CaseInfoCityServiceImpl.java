@@ -92,7 +92,7 @@ public class CaseInfoCityServiceImpl implements CaseInfoCityService {
 				String currentTime = TimeUtil.getNowTime();
 				caseInfoCity.setReportTime(currentTime);
 				String endDate = IntervalTimeUtil.getEndDate(currentTime,
-						caseInfoCity.getLimittimes() , getCalculateType());
+						caseInfoCity.getLimittimes() * 24 , getCalculateType());
 				caseInfoCity.setEndDate(endDate);
 			}
 			

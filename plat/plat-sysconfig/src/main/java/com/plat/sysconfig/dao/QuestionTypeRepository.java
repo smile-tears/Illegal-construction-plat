@@ -20,9 +20,9 @@ public interface QuestionTypeRepository extends JpaRepository<QuestionType,Strin
 	@Query(value = "update QuestionType set delTag=0 where id in ?1 ",nativeQuery = true )
 	public void deleteByIds(String[] ids);
 
-	@Query(value = "select * from QuestionType where fstLvlId is null order by showOrder ",nativeQuery = true )
+	@Query(value = "select * from QuestionType where delTag=1 and fstLvlId is null order by showOrder ",nativeQuery = true )
 	public List<Map<String, String>> getFstLvlType();
 	
-	@Query(value = "select * from QuestionType where fstLvlId in ?1 order by showOrder",nativeQuery = true )
+	@Query(value = "select * from QuestionType where delTag=1 and fstLvlId in ?1 order by showOrder",nativeQuery = true )
 	public List<Map<String, String>> getSecLvlType(String[] fstLvlIds);
 }
