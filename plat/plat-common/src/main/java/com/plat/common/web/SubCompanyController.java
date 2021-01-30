@@ -139,7 +139,7 @@ public class SubCompanyController {
 	
 	public JSONArray recursionSubCompany(String id, JSONArray jsonArray, int type,String compareId) {
 		List<SubCompany> list = new ArrayList<SubCompany>();
-		if (compareId.equals("0")) { //管理员
+		if ("0".equals(compareId)) { //管理员
 			list = subCompanyService.getChildrenSubCompanyId(id);
 		} else {
 			list.add(subCompanyRepository.getOne(compareId));
