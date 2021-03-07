@@ -1,5 +1,10 @@
 package com.plat.caseinfo.service;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,6 +17,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.servlet.http.HttpServletRequest;
 
+//import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+//import org.apache.poi.openxml4j.opc.OPCPackage;
+//import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.hibernate.query.internal.NativeQueryImpl;
 import org.hibernate.transform.Transformers;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +48,9 @@ import com.plat.sysconfig.dao.QuestionTypeRepository;
 import com.plat.sysconfig.dao.SysGlobalConfigRepository;
 import com.plat.sysconfig.entity.SysGlobalConfig;
 import com.plat.sysconfig.util.IntervalTimeUtil;
+import com.spire.doc.Document;
+import com.spire.doc.FileFormat;
+import com.spire.pdf.PdfDocument;
 import com.plat.caseinfo.entity.CaseInfoCity;
 import com.plat.caseinfo.entity.CaseQuestion;
 import com.alibaba.fastjson.JSON;
@@ -477,12 +488,32 @@ public class CaseInfoCityServiceImpl implements CaseInfoCityService {
 		map.put("day3", currentDate.substring(8,10));
 		
 		String uuid = jo.getString("id");
-		String url = FileController.fileAbsolute + uuid+".doc";
+		String url = FileController.fileAbsolute + uuid+".docx";
 		
 		String dir = FileController.fileAbsolute;
 		String filename = "word.ftl";
 		String result = WordUtil.createWord(url,map,dir,filename);	
-		return result.equals("") ? ("/file/" + uuid+".doc") : result;
+		String resultPath = FileController.fileAbsolute + uuid+"_cvrt.docx";
+		if (result.equals("")) {
+			Document document = new Document(url);
+			document.saveToFile(resultPath, FileFormat.Docx);
+			//PdfDocument pdfDocument = new PdfDocument(url);
+			//pdfDocument.saveToFile(resultPath, com.spire.pdf.FileFormat.PDF);
+			
+			
+//			try {
+//				XWPFDocument xwpfDocument = new XWPFDocument(new FileInputStream(url));
+//				
+//				FileOutputStream out = new FileOutputStream(resultPath);
+//				xwpfDocument.write(out);
+//			} catch (IOException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+			
+			return "/file/" + uuid+"_cvrt.docx";
+		}
+		return result;
 	}
 
 	

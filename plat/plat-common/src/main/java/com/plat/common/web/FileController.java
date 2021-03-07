@@ -31,6 +31,9 @@ public class FileController {
 	public static String fileAbsolute = "C:\\Users\\Administrator\\Desktop\\java\\file\\";
 	public static String imageAbsolute = "C:\\Users\\Administrator\\Desktop\\java\\avatar\\";
 	
+//	public static String fileAbsolute = "D:\\git-projects\\wj-plat\\plat\\plat-main\\file\\";
+//	public static String imageAbsolute = "D:\\git-projects\\wj-plat\\plat\\plat-main\\avatar\\";
+	
 	public static String getUUID() {
 		// TODO Auto-generated method stub
 		return UUID.randomUUID().toString().replaceAll("-", "");
