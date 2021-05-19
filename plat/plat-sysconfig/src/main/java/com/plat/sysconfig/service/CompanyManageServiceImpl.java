@@ -68,10 +68,12 @@ public class CompanyManageServiceImpl implements CompanyManageService {
 	public Object find(CompanyManage companyManage, Page page) {
 		Integer pageNo = page.getPageNo();
 		Integer pageSize = page.getPageSize();
-		String countSql = " SELECT t1.*,t3.name,t3.telephone,t2.gridname " + 
+		String countSql = " SELECT t1.*," +
+				" t3.name,t3.telephone,t2.gridname,t4.name as legalPersonName,t4.telephone as legalPersonMobile " + 
 				" from CompanyManage t1  " + 
 				" LEFT JOIN gridcommunity t2 on t1.grid=t2.id " + 
 				" LEFT JOIN user t3 on t1.safetyOffice=t3.id " + 
+				" LEFT JOIN user t4 on t1.legalPerson=t4.id " + 
 				" where t1.delTag=1   ";
 		if (!StringUtils.isEmpty(companyManage.getCompanyName())) {
 			countSql += " and t1.CompanyName like '%"+companyManage.getCompanyName()+"%'";
@@ -86,7 +88,7 @@ public class CompanyManageServiceImpl implements CompanyManageService {
 			dataSql += " limit " + start + "," + offset;
 		}
 		// System.out.println("=========="+dataSql);
-		int total = entityManager.createNativeQuery(countSql).getResultList().size();
+		int total = companyManageRepository.getTotal();
 		List<Map<String, Object>> resultList = entityManager.createNativeQuery(dataSql)
 				.unwrap(NativeQueryImpl.class).setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP).getResultList();
 

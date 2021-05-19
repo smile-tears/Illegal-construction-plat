@@ -55,8 +55,8 @@ public class CompanyManage implements Serializable {
     /**
      * 联系方式
      */
-    @Column(name="mobile"  )
-    private String mobile;
+//    @Column(name="mobile"  )
+//    private String mobile;
 
     /**
      * 企业规模

@@ -57,9 +57,9 @@ public class CaseInfoCityController {
 	 * 查询
 	 */
 	@PostMapping("/find2")
-	public Object find( CaseInfoCity caseInfoCity, Page page,HttpServletRequest request) {
+	public Object find( CaseInfoCity caseInfoCity, Page page,HttpServletRequest request,String source) {
 		//return caseInfoCityService.find2(caseInfoCity, page, request);
-		return new BaseResponse<Object>(200, "success", caseInfoCityService.find2(caseInfoCity, page, request));
+		return new BaseResponse<Object>(200, "success", caseInfoCityService.find2(caseInfoCity, page, request,source));
 	}
 	
 	@PostMapping("/report")

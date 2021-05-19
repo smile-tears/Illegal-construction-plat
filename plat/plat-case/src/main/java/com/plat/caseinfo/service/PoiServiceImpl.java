@@ -77,21 +77,25 @@ public class PoiServiceImpl implements PoiService {
 			companyManage.setId(id);
 			companyManage.setCompanyName(StringUtil.null2String(row.getCell(0)));
 			companyManage.setAddress(StringUtil.null2String(row.getCell(1)));
-			companyManage.setLegalPerson(StringUtil.null2String(row.getCell(2)));
+			//companyManage.setLegalPerson(StringUtil.null2String(row.getCell(2)));
+			String legalPerson = StringUtil.null2String(row.getCell(2));
+			User legalPersonUser = userRepository.getUserByName(legalPerson);
+			if (legalPersonUser != null) 
+				companyManage.setLegalPerson(legalPersonUser.getId());// 法人姓名转id
 
 			String safetyOffice = StringUtil.null2String(row.getCell(3));
 			User user = userRepository.getUserByName(safetyOffice);
 			if (user != null)
 				companyManage.setSafetyOffice(user.getId());// 人员姓名转id
 
-			companyManage.setMobile(StringUtil.null2String(row.getCell(4)));
-			companyManage.setQygm(StringUtil.null2String(row.getCell(5)));
-			companyManage.setLevel(StringUtil.null2String(row.getCell(6)));
-			companyManage.setRemark(StringUtil.null2String(row.getCell(7)));
-			companyManage.setLng(StringUtil.null2String(row.getCell(8)));
-			companyManage.setLat(StringUtil.null2String(row.getCell(9)));
+			//companyManage.setMobile(StringUtil.null2String(row.getCell(4)));
+			companyManage.setQygm(StringUtil.null2String(row.getCell(4)));
+			companyManage.setLevel(StringUtil.null2String(row.getCell(5)));
+			companyManage.setRemark(StringUtil.null2String(row.getCell(6)));
+			companyManage.setLng(StringUtil.null2String(row.getCell(7)));
+			companyManage.setLat(StringUtil.null2String(row.getCell(8)));
 
-			String gridName = StringUtil.null2String(row.getCell(10));
+			String gridName = StringUtil.null2String(row.getCell(9));
 			GridCommunity gridCommunity = gridCommunityRepository.getGridByGridName(gridName);
 			if (gridCommunity != null)
 				companyManage.setGrid(gridCommunity.getId());// 网格名称转网格id

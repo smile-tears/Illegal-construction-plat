@@ -16,7 +16,7 @@ public interface CaseInfoCityService {
 
 	public Object find(CaseInfoCity caseInfoCity, Page page);
 	
-	public JSONObject find2(CaseInfoCity caseInfoCity, Page page,HttpServletRequest request );
+	public JSONObject find2(CaseInfoCity caseInfoCity, Page page,HttpServletRequest request,String source );
 	
 	public Object report();
 	

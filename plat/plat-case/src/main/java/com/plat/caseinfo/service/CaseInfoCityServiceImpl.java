@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,12 +41,15 @@ import com.plat.common.entity.Page;
 import com.plat.common.entity.User;
 import com.plat.common.service.UserService;
 import com.plat.common.utils.BeanProcessUtils;
+import com.plat.common.utils.SmsUtil;
 import com.plat.common.utils.StringUtil;
 import com.plat.common.utils.TimeUtil;
 import com.plat.common.utils.WordUtil;
 import com.plat.common.web.FileController;
+import com.plat.sysconfig.dao.CompanyManageRepository;
 import com.plat.sysconfig.dao.QuestionTypeRepository;
 import com.plat.sysconfig.dao.SysGlobalConfigRepository;
+import com.plat.sysconfig.entity.CompanyManage;
 import com.plat.sysconfig.entity.SysGlobalConfig;
 import com.plat.sysconfig.util.IntervalTimeUtil;
 import com.spire.doc.Document;
@@ -79,6 +83,12 @@ public class CaseInfoCityServiceImpl implements CaseInfoCityService {
 	@Autowired
 	QuestionTypeRepository questionTypeRepository;
 	
+	@Autowired
+	CompanyManageRepository companyManageRepository;
+	
+	@Autowired
+	UserRepository userRepository;
+	
 	public Integer getCalculateType() {
 		int type = 1;
 		List<SysGlobalConfig> sysGlobalConfigs = sysGlobalConfigRepository.findAll();
@@ -95,9 +105,12 @@ public class CaseInfoCityServiceImpl implements CaseInfoCityService {
 			return new BaseResponse<>(500, "经纬度坐标不全！");
 		}
 		List<CaseQuestion> caseQuestions = caseInfoCity.getCaseQuestions();
-		for (CaseQuestion caseQuestion : caseQuestions) {
-			caseQuestion.setCaseInfoCity(caseInfoCity);
+		if (caseQuestions != null) {
+			for (CaseQuestion caseQuestion : caseQuestions) {
+				caseQuestion.setCaseInfoCity(caseInfoCity);
+			} 
 		}
+		
 		try {
 			if (caseInfoCity.getStatus() == 1) {
 				String currentTime = TimeUtil.getNowTime();
@@ -111,7 +124,21 @@ public class CaseInfoCityServiceImpl implements CaseInfoCityService {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return new BaseResponse<>(200, "success",caseInfoCityRepository.save(caseInfoCity));
+		CaseInfoCity save = caseInfoCityRepository.save(caseInfoCity);
+		// ----2021-02-23 上报时给企业法人发送短信通知
+		String mobile = caseInfoCity.getManagerMobile();
+		if (!StringUtils.isEmpty(mobile)) {
+			try {
+				String smsResponse = SmsUtil.sendSms(StringUtil.getUUID(), mobile, "【堰桥安监局】您有一条"+caseInfoCity.getTitle()+"案件需要在"+caseInfoCity.getEndDate()+"之前完成整改，请及时跟踪以及登陆系统查看！");
+				JSONObject smsJo = JSONObject.parseObject(smsResponse);
+				System.out.println("===========短信发送返回结果："+smsJo.toJSONString());
+			} catch (UnsupportedEncodingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		// -------end--------
+		return new BaseResponse<>(200, "success");
 	}
 
 	@Override
@@ -142,6 +169,19 @@ public class CaseInfoCityServiceImpl implements CaseInfoCityService {
 					String endDate = IntervalTimeUtil.getEndDate(currentTime,
 							caseInfoCity.getLimittimes() , getCalculateType());
 					caseInfoCity.setEndDate(endDate);
+					// ----2021-02-23 上报时给企业法人发送短信通知
+//					String mobile = caseInfoCity.getManagerMobile();
+//					if (!StringUtils.isEmpty(mobile)) {
+//						try {
+//							String smsResponse = SmsUtil.sendSms(StringUtil.getUUID(), mobile, "【堰桥安监局】安全生产巡查记录限期整改，请登录系统查看！");
+//							JSONObject smsJo = JSONObject.parseObject(smsResponse);
+//							System.out.println("===========短信发送返回结果："+smsJo.toJSONString());
+//						} catch (UnsupportedEncodingException e) {
+//							// TODO Auto-generated catch block
+//							e.printStackTrace();
+//						}
+//					}
+					// -------end--------
 				} else if (caseInfoCity.getStatus() == 2) {
 					String currentTime = TimeUtil.getNowTime();
 					caseInfoCity.setHandleDate(currentTime);
@@ -197,14 +237,14 @@ public class CaseInfoCityServiceImpl implements CaseInfoCityService {
 	
 	@Override
 	@Transactional(readOnly = true) // 解决 com.sun.proxy.$Proxy306 cannot be cast to org.hibernate.query.internal.NativeQueryImpl
-	public JSONObject find2(CaseInfoCity caseInfoCity, Page page,HttpServletRequest request ) {
-	    //String currentUserId = "";
-		//if (request != null) currentUserId = userService.getUserByToken(request).getId();
+	public JSONObject find2(CaseInfoCity caseInfoCity, Page page,HttpServletRequest request,String source ) {
+	    String currentUserId = "";
+		if (request != null) currentUserId = userService.getUserByToken(request).getId();
 		Integer pageNo = page.getPageNo();
 		Integer pageSize = page.getPageSize();
 		// TODO Auto-generated method stub
 		
-		String countSql = " SELECT t1.*,t6.typeName,t6.typeName2,t2.companyName,t3.gridName,t4.name reportorName,t5.name managerName, " + 
+		String countSql = " SELECT t1.*,t6.typeName,t6.typeName2,t2.companyName,t3.gridName,t4.name reportorName, " + 
 				" case when timestampdiff(SECOND,NOW(),enddate)/timestampdiff(SECOND,reportTime,enddate) >= (1/3) then '0' " + 
 				" when timestampdiff(SECOND,NOW(),enddate)/timestampdiff(SECOND,reportTime,enddate) >= 0 then '1' " + 
 				" when timestampdiff(SECOND,NOW(),enddate)/timestampdiff(SECOND,reportTime,enddate) < 0 then '2' " + 
@@ -213,7 +253,6 @@ public class CaseInfoCityServiceImpl implements CaseInfoCityService {
 				"LEFT JOIN companymanage t2 on t1.companyid=t2.id " + 
 				"LEFT JOIN gridcommunity t3 on t2.grid=t3.id " + 
 				"LEFT JOIN user t4 on t1.reportor=t4.id "+
-				"LEFT JOIN user t5 on t1.manager=t5.id "+
 				" LEFT JOIN (SELECT caseInfoCityId,GROUP_CONCAT(t2.typeName) as typeName," +
 				" GROUP_CONCAT(distinct t3.typeName) as typeName2 "+
 				" from casequestion t1 " + 
@@ -239,7 +278,10 @@ public class CaseInfoCityServiceImpl implements CaseInfoCityService {
 				countSql += " and t1.status <>0 ";
 			}
 		}
-		
+		//------------2021-02-22 企业查看的相关列表 --------
+		if (!StringUtils.isEmpty(currentUserId) && "company".equals(source)) {
+			countSql += " and t1.companyId in (select id from CompanyManage where legalPerson='"+currentUserId+"')";
+		}
 		
 		if (!StringUtils.isEmpty(caseInfoCity.getTitle())) {
 			countSql += " and t1.title like '%"+caseInfoCity.getTitle()+"%'";
@@ -429,7 +471,7 @@ public class CaseInfoCityServiceImpl implements CaseInfoCityService {
 		// TODO Auto-generated method stub
 		CaseInfoCity caseInfoCity = new CaseInfoCity();
 		caseInfoCity.setId(id);
-		JSONObject json = find2(caseInfoCity, new Page(), null);
+		JSONObject json = find2(caseInfoCity, new Page(), null,null);
 		JSONArray jsonArray = json.getJSONArray("data");
 		JSONObject jo = new JSONObject();
 		if (jsonArray.size() > 0) jo = jsonArray.getJSONObject(0);
