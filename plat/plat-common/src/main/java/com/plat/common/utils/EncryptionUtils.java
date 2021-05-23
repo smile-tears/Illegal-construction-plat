@@ -18,6 +18,6 @@ public class EncryptionUtils {
 	}
 	
 	public static void main(String[] args) {
-		System.out.println(encrypt("123"));
+		System.out.println(encrypt("1q2e3w@!1234"));
 	}
 }

@@ -36,4 +36,14 @@ public class SmsUtil {
 		String response = HttpUtil.sendPost(host, JSONObject.toJSONString(map), new HashMap<>());
 		return response;
 	}
+	
+//	public static void main(String[] args) {
+//		try {
+//			String result = sendSms(StringUtil.getUUID(), "15951880719", "【堰桥安监局】安全生产巡查记录限期整改，请登录系统查看！");
+//			System.out.println(result);
+//		} catch (UnsupportedEncodingException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//	}
 }

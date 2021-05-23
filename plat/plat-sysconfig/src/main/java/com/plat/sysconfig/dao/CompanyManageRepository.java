@@ -19,4 +19,7 @@ public interface CompanyManageRepository extends JpaRepository<CompanyManage,Str
 
 	@Query(value = "select id from CompanyManage where companyName = ?1 ",nativeQuery = true )
 	public String getCompanyIdByName(String companyName);
+	
+	@Query(value = "select count(1) from CompanyManage where deltag=1 ",nativeQuery = true )
+	public Integer getTotal();
 }
