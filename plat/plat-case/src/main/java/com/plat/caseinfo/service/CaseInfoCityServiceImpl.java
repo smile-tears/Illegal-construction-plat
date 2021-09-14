@@ -237,7 +237,8 @@ public class CaseInfoCityServiceImpl implements CaseInfoCityService {
 	
 	@Override
 	@Transactional(readOnly = true) // 解决 com.sun.proxy.$Proxy306 cannot be cast to org.hibernate.query.internal.NativeQueryImpl
-	public JSONObject find2(CaseInfoCity caseInfoCity, Page page,HttpServletRequest request,String source ) {
+	public JSONObject find2(CaseInfoCity caseInfoCity, Page page,HttpServletRequest request,String source,
+			String startDate,String endDate,String reportorName) {
 	    String currentUserId = "";
 		if (request != null) currentUserId = userService.getUserByToken(request).getId();
 		Integer pageNo = page.getPageNo();
@@ -286,6 +287,22 @@ public class CaseInfoCityServiceImpl implements CaseInfoCityService {
 		if (!StringUtils.isEmpty(caseInfoCity.getTitle())) {
 			countSql += " and t1.title like '%"+caseInfoCity.getTitle()+"%'";
 		}
+		
+		if (!StringUtils.isEmpty(startDate)) {
+			countSql += " and substr(t1.reportTime,1,10)>='"+startDate+"'";
+		}
+		if (!StringUtils.isEmpty(endDate)) {
+			countSql += " and substr(t1.reportTime,1,10)<='"+endDate+"'";
+		}
+		
+		if (!StringUtils.isEmpty(caseInfoCity.getManager())) {
+			countSql += " and t1.manager like '%"+caseInfoCity.getManager()+"%'";
+		}
+		
+		if (!StringUtils.isEmpty(reportorName)) {
+			countSql += " and t4.name like '%"+reportorName+"%'";
+		}
+		
 		countSql += " ORDER BY t1.reportTime desc ";
 		String dataSql = countSql;
 		if (!StringUtils.isEmpty(pageNo) && !StringUtils.isEmpty(pageSize)) {
@@ -471,7 +488,7 @@ public class CaseInfoCityServiceImpl implements CaseInfoCityService {
 		// TODO Auto-generated method stub
 		CaseInfoCity caseInfoCity = new CaseInfoCity();
 		caseInfoCity.setId(id);
-		JSONObject json = find2(caseInfoCity, new Page(), null,null);
+		JSONObject json = find2(caseInfoCity, new Page(), null,null,null,null,null);
 		JSONArray jsonArray = json.getJSONArray("data");
 		JSONObject jo = new JSONObject();
 		if (jsonArray.size() > 0) jo = jsonArray.getJSONObject(0);
