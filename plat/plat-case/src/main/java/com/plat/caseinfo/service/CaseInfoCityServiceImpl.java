@@ -430,7 +430,7 @@ public class CaseInfoCityServiceImpl implements CaseInfoCityService {
 				.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP).getResultList();
 		
 		String areaSql = "SELECT id,gridName,patrolManager from gridcommunity "
-				+" where patrolManager is not null and patrolManager<>'' " ;
+				+" where patrolManager is not null and patrolManager<>'' and deltag=1 " ;
 		if (!StringUtils.isEmpty(grid)) {
 			areaSql += " and id='"+grid+"'";
 		}
@@ -479,7 +479,7 @@ public class CaseInfoCityServiceImpl implements CaseInfoCityService {
 		jsonObject.put("barData", data3);
 //		System.out.println("========="+sql1);
 //		System.out.println("========="+sql2);
-//		System.out.println("========="+sql3);
+		System.out.println("========="+sql3);
 		return jsonObject;
 	}
 
